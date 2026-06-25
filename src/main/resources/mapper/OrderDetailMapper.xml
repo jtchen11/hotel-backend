@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hotel.mapper.OrderDetailMapper">
+
+    <!-- 统计今日餐饮营业额（已结账） -->
+    <select id="sumTodayFoodRevenue" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(amount), 0)
+        FROM order_detail
+        WHERE item_type = '餐饮'
+          AND is_settled = 1
+          AND DATE(create_time) = CURDATE()
+    </select>
+
+    <!-- 统计今日餐饮订单数（已结账，按客人+日期组合去重） -->
+    <select id="countTodayFoodOrders" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT CONCAT(guest_id, DATE(create_time)))
+        FROM order_detail
+        WHERE item_type = '餐饮'
+          AND is_settled = 1
+          AND DATE(create_time) = CURDATE()
+    </select>
+
+</mapper>

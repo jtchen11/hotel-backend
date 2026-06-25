@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hotel.mapper.DepositMapper">
+    <select id="selectDepositRecords" resultType="com.hotel.dto.DepositRecordDTO">
+        SELECT
+        g.guest_id, g.name, g.status,
+        r.room_number,
+        SUM(CASE WHEN d.type IN ('收取','追加') THEN d.amount ELSE 0 END) -
+        SUM(CASE WHEN d.type = '退还' THEN ABS(d.amount) ELSE 0 END) AS deposit_balance,
+        MAX(d.create_time) AS last_operate_time
+        FROM deposit d
+        JOIN guest g ON d.guest_id = g.guest_id
+        LEFT JOIN room r ON g.room_id = r.room_id
+        WHERE 1=1
+        <if test="startDate != null and startDate != ''">
+            AND DATE(d.create_time) >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND DATE(d.create_time) &lt;= #{endDate}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (g.name LIKE CONCAT('%', #{keyword}, '%') OR r.room_number LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null and status != ''">
+            AND g.status = #{status}
+        </if>
+        GROUP BY g.guest_id, g.name, g.status, r.room_number
+        ORDER BY FIELD(g.status, '在住', '已离店'), last_operate_time DESC
+    </select>
+
+    <select id="selectHistoryByGuestId" resultType="com.hotel.entity.Deposit">
+        SELECT * FROM deposit WHERE guest_id = #{guestId} ORDER BY create_time DESC
+    </select>
+</mapper>

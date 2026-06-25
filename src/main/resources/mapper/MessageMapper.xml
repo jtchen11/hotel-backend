@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hotel.mapper.MessageMapper">
+
+    <select id="selectMessageWithRoom" resultType="com.hotel.entity.Message">
+        SELECT m.*, r.room_number
+        FROM message m
+                 LEFT JOIN guest g ON m.guest_id = g.guest_id
+                 LEFT JOIN room r ON g.room_id = r.room_id
+        ORDER BY m.create_time DESC
+    </select>
+
+</mapper>

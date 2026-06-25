@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hotel.mapper.OrderMainMapper">
+<select id="selectSettledOrders" resultType="com.hotel.dto.SettleRecordDTO">
+    SELECT
+    o.order_id, o.guest_id, o.total_amount, o.deposit_total, o.refund_amount, o.settle_time,
+    o.operator, o.room_fee AS roomFee, o.food_fee AS foodFee, o.ktv_fee AS ktvFee, o.other_fee AS otherFee,
+    g.name AS guest_name,
+    r.room_number, r.room_type AS roomType
+    FROM order_main o
+    JOIN guest g ON o.guest_id = g.guest_id
+    LEFT JOIN room r ON o.room_id = r.room_id
+    WHERE o.status = '已结算'
+    <if test="startDate != null"> AND o.settle_time >= #{startDate}</if>
+    <if test="endDate != null"> AND o.settle_time &lt; #{endDate} + 1</if>
+    <if test="keyword != null and keyword != ''">
+        AND (g.name LIKE CONCAT('%', #{keyword}, '%') OR r.room_number LIKE CONCAT('%', #{keyword}, '%'))
+    </if>
+    ORDER BY o.settle_time DESC
+</select>
+</mapper>
