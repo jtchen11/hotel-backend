@@ -58,7 +58,7 @@ src/main/java/com/xxx/hotel
 
 \## 💾 数据库设计
 
-\*   共计 \*\*16张\*\* 核心数据表，涵盖 `guest`（客人）、`room`（房间）、`order\_main/detail`（订单）、`attendance`（考勤）、`salary`（工资）等。
+\*   共计 \*\*16张\*\* 核心数据表，涵盖 `guest`（客人）、`room`（房间）、`order\\\_main/detail`（订单）、`attendance`（考勤）、`salary`（工资）等。
 
 \*   详见项目中的 `docs/数据库设计文档.md` 或 \[E-R图](链接)。
 
@@ -82,25 +82,25 @@ src/main/java/com/xxx/hotel
 
 ```bash
 
-\# 1. 克隆项目
+\\# 1. 克隆项目
 
-git clone https://github.com/jtchen11/your-repo-name.git
-
-
-
-\# 2. 导入SQL文件
-
-\# 在MySQL中创建数据库 hotel\_db，并执行 /db/hotel.sql
+git clone https://github.com/jtchen11/hotel-management-system.git
 
 
 
-\# 3. 修改配置
+\\# 2. 导入SQL文件
 
-\# 修改 application-dev.yml 中的数据库用户名和密码
+\\# 在MySQL中创建数据库 hotel\\\_db，并执行 /db/hotel.sql
 
 
 
-\# 4. 启动后端
+\\# 3. 修改配置
+
+\\# 修改 application-dev.yml 中的数据库用户名和密码
+
+
+
+\\# 4. 启动后端
 
 mvn clean install
 
@@ -108,21 +108,22 @@ mvn spring-boot:run
 
 
 
-\###前端启动步骤
+\\###前端启动步骤
 
-\# 1. 进入前端目录
+\\# 1. 进入前端目录
 
 cd frontend
 
 
 
-\# 2. 安装依赖
+\\# 2. 安装依赖
 
 npm install
 
 
 
-\# 3. 启动开发服务器
+\\# 3. 启动开发服务器
 
 npm run serve
+
 
