@@ -53,12 +53,15 @@ public class SettleController {
     @PostMapping("/settle")
     public Result<Map<String, Object>> settle(
             @RequestParam Integer guestId,
-            @RequestParam(required = false) BigDecimal discountRate) {
+            @RequestParam(required = false) BigDecimal discountRate,
+            @RequestParam(required = false) String payMethod) {
         if (discountRate == null) {
-            return settleService.settle(guestId);
-        } else {
-            return settleService.settle(guestId, discountRate);
+            discountRate = BigDecimal.ONE;
         }
+        if (payMethod == null || payMethod.trim().isEmpty()) {
+            payMethod = "现金";
+        }
+        return settleService.settle(guestId, discountRate, payMethod);
     }
 
     @GetMapping("/order/bill/{orderId}")
@@ -76,6 +79,7 @@ public class SettleController {
         data.put("refundAmount", order.getRefundAmount());
         data.put("settleTime", order.getSettleTime());
         data.put("operator", order.getOperator());
+        data.put("payMethod", order.getPayMethod());
         data.put("guestName", guest != null ? guest.getName() : "");
         data.put("roomNumber", room != null ? room.getRoomNumber() : "");
         data.put("roomType", room != null ? room.getRoomType() : "");
@@ -117,12 +121,11 @@ public class SettleController {
             result.add(item);
         }
 
-        // 3. 补充从 ktv_record 中未关联到 order_detail 的 KTV 记录（如有遗漏）
+        // 3. 补充从 ktv_record 中未关联到 order_detail 的 KTV 记录
         List<KtvRecord> ktvRecords = ktvRecordMapper.selectList(
                 new QueryWrapper<KtvRecord>().eq("order_id", orderId)
         );
         for (KtvRecord kr : ktvRecords) {
-            // 检查是否已经存在，避免重复
             boolean exists = result.stream().anyMatch(m ->
                     "KTV".equals(m.get("itemType")) && m.get("itemName").toString().contains(kr.getDuration() + "小时")
             );

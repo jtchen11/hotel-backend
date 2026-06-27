@@ -38,25 +38,18 @@ public class SettleServiceImpl implements SettleService {
     @Autowired private KtvRecordMapper ktvRecordMapper;
     @Autowired private KtvRoomMapper ktvRoomMapper;
 
-    // ---------- 无折扣版本（调用有折扣版本，折扣率为1） ----------
+    // 预览方法
     @Override
     public Result<SettlePreviewDTO> preview(Integer guestId) {
         return preview(guestId, BigDecimal.ONE);
     }
 
     @Override
-    public Result<Map<String, Object>> settle(Integer guestId) {
-        return settle(guestId, BigDecimal.ONE);
-    }
-
-    // ---------- 带折扣版本 ----------
-    @Override
     public Result<SettlePreviewDTO> preview(Integer guestId, BigDecimal discountRate) {
         Guest guest = guestMapper.selectById(guestId);
         if (guest == null || !"在住".equals(guest.getStatus())) {
             return Result.error("客人不存在或不在住");
         }
-
         // 检查未结账KTV
         Integer unsettledKtvCount = ktvRecordMapper.countUnsettledByGuestId(guestId);
         if (unsettledKtvCount != null && unsettledKtvCount > 0) {
@@ -105,7 +98,7 @@ public class SettleServiceImpl implements SettleService {
             dto.setPrice(kr.getTotalFee());
             dto.setAmount(kr.getTotalFee());
             ktvDTOs.add(dto);
-            ktvTotal = ktvTotal.add(kr.getTotalFee()); // 仅用于展示，不用于计费
+            ktvTotal = ktvTotal.add(kr.getTotalFee());
         }
 
         // 押金余额
@@ -114,7 +107,6 @@ public class SettleServiceImpl implements SettleService {
         // 计算总消费（不含KTV）
         BigDecimal discountBase = roomFee.add(foodFee);
         BigDecimal discountedPart = discountBase.multiply(discountRate).setScale(2, RoundingMode.HALF_UP);
-        // 总消费 = 折扣后部分 + 其他杂项（不含餐饮、不含KTV）
         BigDecimal totalConsume = discountedPart.add(otherFee);
 
         // 应付款 = 总消费 - 押金余额
@@ -127,7 +119,7 @@ public class SettleServiceImpl implements SettleService {
         preview.setRoomFee(roomFee);
         preview.setDetails(detailDTOs);
         preview.setKtvList(ktvDTOs);
-        preview.setKtvTotal(ktvTotal); // 仅展示
+        preview.setKtvTotal(ktvTotal);
         preview.setTotalFee(totalConsume);
         preview.setDiscountedTotal(discountedPart);
         preview.setDepositBalance(depositBalance);
@@ -136,9 +128,29 @@ public class SettleServiceImpl implements SettleService {
         return Result.success(preview);
     }
 
+    // settle 方法重载：三个版本串联
+    /**
+     * 版本1：无折扣结账，默认支付方式为"现金"
+     */
+    @Override
+    public Result<Map<String, Object>> settle(Integer guestId) {
+        return settle(guestId, BigDecimal.ONE, "现金");
+    }
+
+    /**
+     * 版本2：有折扣结账，默认支付方式为"现金"
+     */
+    @Override
+    public Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate) {
+        return settle(guestId, discountRate, "现金");
+    }
+
+    /**
+     * 版本3：完整结账（有折扣 + 指定支付方式）—— 真正的业务逻辑在这里
+     */
     @Override
     @Transactional
-    public Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate) {
+    public Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate, String payMethod) {
         // 1. 获取预览数据
         Result<SettlePreviewDTO> previewResult = preview(guestId, discountRate);
         if (previewResult.getCode() != 200) {
@@ -170,22 +182,22 @@ public class SettleServiceImpl implements SettleService {
         BigDecimal discountedPart = discountBase.multiply(discountRate).setScale(2, RoundingMode.HALF_UP);
         BigDecimal totalConsume = discountedPart.add(otherFee);
 
-        // 5. 插入订单主表
+        // 5. 插入订单主表（使用传入的 payMethod）
         OrderMain order = new OrderMain();
         order.setGuestId(guestId);
         order.setRoomId(guest.getRoomId());
         order.setRoomFee(preview.getRoomFee());
         order.setFoodFee(foodFee);
-        order.setKtvFee(ktvTotal);               // 记录KTV总额，但不影响totalAmount
+        order.setKtvFee(ktvTotal);
         order.setOtherFee(otherFee);
-        order.setTotalAmount(totalConsume);      // 总消费不含KTV
+        order.setTotalAmount(totalConsume);
         order.setDepositTotal(preview.getDepositBalance());
-        // 退款金额 = 押金 - 总消费（如果押金大于总消费，则为正；否则为0）
         BigDecimal refundAmount = preview.getDepositBalance().subtract(totalConsume);
         order.setRefundAmount(refundAmount.compareTo(BigDecimal.ZERO) > 0 ? refundAmount : BigDecimal.ZERO);
         order.setStatus("已结算");
         order.setSettleTime(LocalDateTime.now());
         order.setOperator(UserContext.getEmpName());
+        order.setPayMethod(payMethod);  // ✅ 使用传入的支付方式
         orderMainMapper.insert(order);
 
         // 6. 统一更新所有未结明细（关联订单）
@@ -217,7 +229,7 @@ public class SettleServiceImpl implements SettleService {
         if (refundAmount.compareTo(BigDecimal.ZERO) > 0) {
             Deposit refund = new Deposit();
             refund.setGuestId(guestId);
-            refund.setAmount(refundAmount.negate()); // 负值表示退还
+            refund.setAmount(refundAmount.negate());
             refund.setType("退还");
             refund.setPayMethod("原路返回");
             refund.setRemark("结账自动退还");
@@ -226,13 +238,16 @@ public class SettleServiceImpl implements SettleService {
             depositMapper.insert(refund);
         }
 
+        // 11. 返回结果
         Map<String, Object> result = new HashMap<>();
         result.put("needPay", totalConsume.subtract(preview.getDepositBalance()));
         result.put("orderId", order.getOrderId());
         result.put("discountRate", discountRate);
+        result.put("payMethod", payMethod);  // ✅ 返回支付方式
         return Result.success(result);
     }
 
+    // 工具方法
     // 计算入住天数（不足一天按一天计）
     private long calcStayDaysUpward(LocalDateTime checkIn, LocalDateTime checkOut) {
         if (checkOut == null) checkOut = LocalDateTime.now();
@@ -245,6 +260,7 @@ public class SettleServiceImpl implements SettleService {
         return days == 0 ? 1 : days;
     }
 
+    // 已结账订单列表
     @Override
     public Result<IPage<SettleRecordDTO>> listSettledOrders(SettleListDTO dto) {
         Page<SettleRecordDTO> page = new Page<>(dto.getPage(), dto.getSize());

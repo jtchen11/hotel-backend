@@ -1,28 +1,31 @@
 <template>
-  <div style="display: none;"></div>
+  <div style="display: none"></div>
 </template>
 
 <script setup>
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 const print = async (orderId) => {
   // 1. 获取订单主信息
-  const orderRes = await request.get(`/finance/order/bill/${orderId}`)
-  const order = orderRes.data
+  const orderRes = await request.get(`/finance/order/bill/${orderId}`);
+  const order = orderRes.data;
   // 2. 获取订单明细
-  const detailRes = await request.get(`/finance/order/details/${orderId}`)
-  const details = detailRes.data || []
+  const detailRes = await request.get(`/finance/order/details/${orderId}`);
+  const details = detailRes.data || [];
 
   // 按类型分组
-  const foodItems = details.filter(d => d.itemType === '餐饮')
-  const ktvItems = details.filter(d => d.itemType === 'KTV')
-  const otherItems = details.filter(d => d.itemType !== '餐饮' && d.itemType !== 'KTV')
+  const foodItems = details.filter((d) => d.itemType === "餐饮");
+  const ktvItems = details.filter((d) => d.itemType === "KTV");
+  const otherItems = details.filter(
+    (d) => d.itemType !== "餐饮" && d.itemType !== "KTV",
+  );
 
   // 房间号带房型显示
-  const roomDisplay = order.roomNumber + (order.roomType ? '-' + order.roomType : '')
+  const roomDisplay =
+    order.roomNumber + (order.roomType ? "-" + order.roomType : "");
 
   // 构建打印内容
-  const printWindow = window.open('', '_blank')
+  const printWindow = window.open("", "_blank");
   printWindow.document.write(`
     <html>
     <head>
@@ -46,37 +49,49 @@ const print = async (orderId) => {
         <p><strong>客人姓名：</strong>${order.guestName}</p>
         <p><strong>房间号：</strong>${roomDisplay}</p>
         <p><strong>结账时间：</strong>${order.settleTime}</p>
-        <p><strong>操作员：</strong>${order.operator || ''}</p>
+        <p><strong>操作员：</strong>${order.operator || ""}</p>
       </div>
 
       <h3>消费明细</h3>
-      ${foodItems.length ? `
+      ${
+        foodItems.length
+          ? `
         <h4>餐饮消费</h4>
         <table>
           <thead><tr><th>项目</th><th>数量</th><th>单价(¥)</th><th>金额(¥)</th></tr></thead>
           <tbody>
-            ${foodItems.map(d => `<tr><td>${d.itemName}</td><td>${d.quantity}</td><td>${d.price}</td><td>${d.amount}</td></tr>`).join('')}
+            ${foodItems.map((d) => `<tr><td>${d.itemName}</td><td>${d.quantity}</td><td>${d.price}</td><td>${d.amount}</td></tr>`).join("")}
           </tbody>
         </table>
-      ` : ''}
-      ${ktvItems.length ? `
+      `
+          : ""
+      }
+      ${
+        ktvItems.length
+          ? `
         <h4>KTV消费（不计入本次结算）</h4>
         <table>
           <thead><tr><th>项目</th><th>金额(¥)</th></tr></thead>
           <tbody>
-            ${ktvItems.map(d => `<tr><td>${d.itemName}</td><td>${d.amount}</td></tr>`).join('')}
+            ${ktvItems.map((d) => `<tr><td>${d.itemName}</td><td>${d.amount}</td></tr>`).join("")}
           </tbody>
         </table>
-      ` : ''}
-      ${otherItems.length ? `
+      `
+          : ""
+      }
+      ${
+        otherItems.length
+          ? `
         <h4>其他消费</h4>
         <table>
           <thead><tr><th>项目</th><th>数量</th><th>单价(¥)</th><th>金额(¥)</th></tr></thead>
           <tbody>
-            ${otherItems.map(d => `<tr><td>${d.itemName}</td><td>${d.quantity}</td><td>${d.price}</td><td>${d.amount}</td></tr>`).join('')}
+            ${otherItems.map((d) => `<tr><td>${d.itemName}</td><td>${d.quantity}</td><td>${d.price}</td><td>${d.amount}</td></tr>`).join("")}
           </tbody>
         </table>
-      ` : ''}
+      `
+          : ""
+      }
 
       <table class="total-table">
         <tr><td style="border:none; text-align:right;"><strong>消费总额：</strong></td><td style="border:none;">¥${order.totalAmount}</td></tr>
@@ -88,11 +103,11 @@ const print = async (orderId) => {
       <div class="footer">感谢惠顾，欢迎下次光临！</div>
     </body>
     </html>
-  `)
-  printWindow.document.close()
-  printWindow.print()
-  printWindow.close()
-}
+  `);
+  printWindow.document.close();
+  printWindow.print();
+  printWindow.close();
+};
 
-defineExpose({ print })
+defineExpose({ print });
 </script>

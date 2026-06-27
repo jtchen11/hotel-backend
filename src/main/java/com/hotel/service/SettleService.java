@@ -14,8 +14,10 @@ public interface SettleService {
     Result<SettlePreviewDTO> preview(Integer guestId);
     Result<Map<String, Object>> settle(Integer guestId);
 
-    // 带折扣（折扣率 0.5 ~ 1，1表示无折扣）
+    // 带折扣（折扣率 0.5 ~ 1，1表示无折扣）+支付方式
     Result<SettlePreviewDTO> preview(Integer guestId, BigDecimal discountRate);
     Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate);
+    Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate, String payMethod);
+
     Result<IPage<SettleRecordDTO>> listSettledOrders(SettleListDTO dto);
 }

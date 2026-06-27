@@ -25,6 +25,7 @@ public class OrderMain {
     private String status;
     private LocalDateTime settleTime;
     private String operator;
+    private String payMethod;
 
     public void setCreateTime(LocalDateTime now) {
     }

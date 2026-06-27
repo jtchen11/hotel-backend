@@ -22,16 +22,20 @@
 
     <!-- ===== 主内容 ===== -->
     <main class="main-content">
-
       <!-- 1. 外景轮播 -->
       <section class="section hero-section">
-        <el-carousel height="640px" indicator-position="outside" arrow="always" :interval="5000">
+        <el-carousel
+          height="640px"
+          indicator-position="outside"
+          arrow="always"
+          :interval="5000"
+        >
           <el-carousel-item v-for="(img, idx) in exteriorImages" :key="idx">
             <el-image
-                :src="img"
-                fit="cover"
-                style="width:100%;height:640px;"
-                :preview-src-list="exteriorImages"
+              :src="img"
+              fit="cover"
+              style="width: 100%; height: 640px"
+              :preview-src-list="exteriorImages"
             />
           </el-carousel-item>
         </el-carousel>
@@ -44,7 +48,7 @@
             <div class="section-label">— 地理位置 —</div>
             <h2 class="section-title">抵达橙皮荔</h2>
             <p class="text-body">
-              饭店位于广东省广州市天河区珠江东路6号（广州周大福金融中心），<br>
+              饭店位于广东省广州市天河区珠江东路6号（广州周大福金融中心），<br />
               地处珠江新城核心区域，毗邻花城广场、广州塔。
             </p>
             <div class="location-info-grid">
@@ -67,18 +71,20 @@
             </div>
             <div class="promo-banner">
               <span class="promo-icon">✨</span>
-              <span class="promo-text">即日起至12月31日，畅享低至五折住房餐饮优惠</span>
+              <span class="promo-text"
+                >即日起至12月31日，畅享低至五折住房餐饮优惠</span
+              >
             </div>
           </div>
           <div class="location-map">
             <div class="map-container">
               <baidu-map
-                  class="bm-view"
-                  :center="{ lng: 113.325, lat: 23.120 }"
-                  :zoom="17"
-                  :scroll-wheel-zoom="true"
+                class="bm-view"
+                :center="{ lng: 113.325, lat: 23.12 }"
+                :zoom="17"
+                :scroll-wheel-zoom="true"
               >
-                <bm-marker :position="{ lng: 113.325, lat: 23.120 }" />
+                <bm-marker :position="{ lng: 113.325, lat: 23.12 }" />
               </baidu-map>
             </div>
           </div>
@@ -92,24 +98,26 @@
           <h2 class="section-title">楼层平面布局</h2>
         </div>
         <el-carousel
-            class="explore-carousel"
-            height="360px"
-            indicator-position="outside"
-            arrow="always"
-            :interval="4000"
+          class="explore-carousel"
+          height="360px"
+          indicator-position="outside"
+          arrow="always"
+          :interval="4000"
         >
           <el-carousel-item v-for="(floor, idx) in floorPlans" :key="idx">
             <div class="explore-item">
               <div class="explore-image">
                 <el-image
-                    :src="floor.image"
-                    fit="cover"
-                    style="width:100%;height:100%;"
-                    :preview-src-list="floorPlans.map(f => f.image)"
+                  :src="floor.image"
+                  fit="cover"
+                  style="width: 100%; height: 100%"
+                  :preview-src-list="floorPlans.map((f) => f.image)"
                 />
               </div>
               <div class="explore-text">
-                <span class="explore-number">{{ floor.label.split(' ')[0] }}</span>
+                <span class="explore-number">{{
+                  floor.label.split(" ")[0]
+                }}</span>
                 <h3 class="explore-title">{{ floor.label }}</h3>
                 <p class="explore-desc">{{ floor.description }}</p>
               </div>
@@ -125,21 +133,28 @@
           <h2 class="section-title">服务及设施</h2>
         </div>
         <div class="facilities-grid">
-          <div v-for="(item, idx) in facilities" :key="idx" class="facility-card">
+          <div
+            v-for="(item, idx) in facilities"
+            :key="idx"
+            class="facility-card"
+          >
             <div class="facility-carousel-wrapper">
               <el-carousel
-                  class="facility-carousel"
-                  height="300px"
-                  indicator-position="inside"
-                  arrow="always"
-                  :interval="4000"
+                class="facility-carousel"
+                height="300px"
+                indicator-position="inside"
+                arrow="always"
+                :interval="4000"
               >
-                <el-carousel-item v-for="(img, imgIdx) in item.images" :key="imgIdx">
+                <el-carousel-item
+                  v-for="(img, imgIdx) in item.images"
+                  :key="imgIdx"
+                >
                   <el-image
-                      :src="img"
-                      fit="cover"
-                      style="width:100%;height:300px;"
-                      :preview-src-list="item.images"
+                    :src="img"
+                    fit="cover"
+                    style="width: 100%; height: 300px"
+                    :preview-src-list="item.images"
                   />
                 </el-carousel-item>
               </el-carousel>
@@ -157,7 +172,10 @@
         <div class="section-header">
           <span class="section-label">— 味觉盛宴 —</span>
           <h2 class="section-title">菜肴精选</h2>
-          <p class="text-body" style="color:#909399;font-size:14px;margin-top:4px;">
+          <p
+            class="text-body"
+            style="color: #909399; font-size: 14px; margin-top: 4px"
+          >
             早餐厅每日 7:00–9:30 供应 · 其他时段可挂账点餐送餐到房
           </p>
         </div>
@@ -165,10 +183,17 @@
           <div class="dish-scroll">
             <div v-for="(dish, idx) in dishList" :key="idx" class="dish-item">
               <el-image
-                  :src="dish.image || placeholderImg"
-                  fit="cover"
-                  style="width:180px;height:180px;border-radius:8px;flex-shrink:0;"
-                  :preview-src-list="dishList.map(d => d.image || placeholderImg)"
+                :src="dish.image || placeholderImg"
+                fit="cover"
+                style="
+                  width: 180px;
+                  height: 180px;
+                  border-radius: 8px;
+                  flex-shrink: 0;
+                "
+                :preview-src-list="
+                  dishList.map((d) => d.image || placeholderImg)
+                "
               />
               <span class="dish-name">{{ dish.name }}</span>
             </div>
@@ -185,41 +210,41 @@
 
     <!-- ===== 登录弹窗 ===== -->
     <el-dialog
-        v-model="showLoginDialog"
-        title="员工登录"
-        width="400px"
-        :close-on-click-modal="true"
-        class="login-dialog"
-        destroy-on-close
+      v-model="showLoginDialog"
+      title="员工登录"
+      width="400px"
+      :close-on-click-modal="true"
+      class="login-dialog"
+      destroy-on-close
     >
       <el-form :model="form" :rules="rules" ref="loginFormRef" label-width="0">
         <el-form-item prop="empName">
           <el-input
-              v-model="form.empName"
-              placeholder="用户名"
-              prefix-icon="User"
-              size="large"
-              @keyup.enter="handleLogin"
+            v-model="form.empName"
+            placeholder="用户名"
+            prefix-icon="User"
+            size="large"
+            @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item prop="password">
           <el-input
-              v-model="form.password"
-              type="password"
-              placeholder="密码"
-              prefix-icon="Lock"
-              size="large"
-              show-password
-              @keyup.enter="handleLogin"
+            v-model="form.password"
+            type="password"
+            placeholder="密码"
+            prefix-icon="Lock"
+            size="large"
+            show-password
+            @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item>
           <el-button
-              type="primary"
-              size="large"
-              style="width:100%;"
-              @click="handleLogin"
-              :loading="loading"
+            type="primary"
+            size="large"
+            style="width: 100%"
+            @click="handleLogin"
+            :loading="loading"
           >
             登 录
           </el-button>
@@ -230,13 +255,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { User } from '@element-plus/icons-vue';
-import { useUserStore } from '@/store/user';
-import { login } from '@/api/login';
-import request from '@/utils/request';
+import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { User } from "@element-plus/icons-vue";
+import { useUserStore } from "@/store/user";
+import { login } from "@/api/login";
+import request from "@/utils/request";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -245,13 +270,13 @@ const loading = ref(false);
 const showLoginDialog = ref(false);
 
 const form = reactive({
-  empName: '',
-  password: '',
+  empName: "",
+  password: "",
 });
 
 const rules = {
-  empName: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  empName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
 };
 
 const handleLogin = async () => {
@@ -270,18 +295,18 @@ const handleLogin = async () => {
       ElMessage.success(`欢迎回来，${userInfo.empName}`);
       showLoginDialog.value = false;
       const roleHome = {
-        '前台接待员': '/reception',
-        '营业服务员': '/waiter',
-        '财务管理员': '/finance',
-        '总经理': '/gm',
+        前台接待员: "/reception",
+        营业服务员: "/waiter",
+        财务管理员: "/finance",
+        总经理: "/gm",
       };
-      router.push(roleHome[userInfo.role] || '/');
+      router.push(roleHome[userInfo.role] || "/");
     } else {
-      ElMessage.error(res.msg || '登录失败');
+      ElMessage.error(res.msg || "登录失败");
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error('登录异常，请稍后重试');
+    ElMessage.error("登录异常，请稍后重试");
   } finally {
     loading.value = false;
   }
@@ -290,105 +315,105 @@ const handleLogin = async () => {
 // ====== 服务指南数据 ======
 const dishList = ref([]);
 const dishLoading = ref(false);
-const placeholderImg = '/images/placeholder.jpg';
+const placeholderImg = "/images/placeholder.jpg";
 
 const exteriorImages = [
-  '/images/guide/exterior/exterior-1.jpg',
-  '/images/guide/exterior/exterior-2.jpg',
-  '/images/guide/exterior/exterior-3.jpg',
-  '/images/guide/exterior/exterior-4.jpg',
-  '/images/guide/exterior/exterior-5.jpg',
+  "/images/guide/exterior/exterior-1.jpg",
+  "/images/guide/exterior/exterior-2.jpg",
+  "/images/guide/exterior/exterior-3.jpg",
+  "/images/guide/exterior/exterior-4.jpg",
+  "/images/guide/exterior/exterior-5.jpg",
 ];
 
 const floorPlans = [
   {
-    label: '1F 大堂 · 早餐厅',
-    image: '/images/guide/floors/floor-1f.jpg',
-    description: '典雅大堂，每日 7:00–9:30 供应自助早餐，开启您的美好一天。'
+    label: "1F 大堂 · 早餐厅",
+    image: "/images/guide/floors/floor-1f.jpg",
+    description: "典雅大堂，每日 7:00–9:30 供应自助早餐，开启您的美好一天。",
   },
   {
-    label: '2F 会议室',
-    image: '/images/guide/floors/floor-2f.jpg',
-    description: '多功能会议空间，可容纳 50 人，配备高清投影及视频会议系统。'
+    label: "2F 会议室",
+    image: "/images/guide/floors/floor-2f.jpg",
+    description: "多功能会议空间，可容纳 50 人，配备高清投影及视频会议系统。",
   },
   {
-    label: '3F 标准客房',
-    image: '/images/guide/floors/floor-3f.jpg',
-    description: '舒适温馨的城市景观房，配备高品质床品及智能客房控制系统。'
+    label: "3F 标准客房",
+    image: "/images/guide/floors/floor-3f.jpg",
+    description: "舒适温馨的城市景观房，配备高品质床品及智能客房控制系统。",
   },
   {
-    label: '4F 豪华客房',
-    image: '/images/guide/floors/floor-4f.jpg',
-    description: '宽敞明亮的江景客房，俯瞰珠江两岸璀璨夜景。'
+    label: "4F 豪华客房",
+    image: "/images/guide/floors/floor-4f.jpg",
+    description: "宽敞明亮的江景客房，俯瞰珠江两岸璀璨夜景。",
   },
   {
-    label: '5F 行政套房',
-    image: '/images/guide/floors/floor-5f.jpg',
-    description: '尊享行政礼遇，专属酒廊、私人管家服务，彰显非凡品味。'
+    label: "5F 行政套房",
+    image: "/images/guide/floors/floor-5f.jpg",
+    description: "尊享行政礼遇，专属酒廊、私人管家服务，彰显非凡品味。",
   },
   {
-    label: '6F KTV包房',
-    image: '/images/guide/floors/floor-6f.jpg',
-    description: '高端专业音响设备，私密优雅的聚会空间，尽享欢唱时光。'
+    label: "6F KTV包房",
+    image: "/images/guide/floors/floor-6f.jpg",
+    description: "高端专业音响设备，私密优雅的聚会空间，尽享欢唱时光。",
   },
   {
-    label: '7F 洗衣 · 健身',
-    image: '/images/guide/floors/floor-7f.jpg',
-    description: '24 小时自助洗衣服务及现代化健身中心，配备顶级有氧与力量训练设备。'
+    label: "7F 洗衣 · 健身",
+    image: "/images/guide/floors/floor-7f.jpg",
+    description:
+      "24 小时自助洗衣服务及现代化健身中心，配备顶级有氧与力量训练设备。",
   },
   {
-    label: '8F 赤醉酒吧',
-    image: '/images/guide/floors/floor-8f.jpg',
-    description: '顶层酒吧，俯瞰珠江新城璀璨夜景，精选全球经典鸡尾酒与珍酿威士忌。'
-  }
+    label: "8F 赤醉酒吧",
+    image: "/images/guide/floors/floor-8f.jpg",
+    description:
+      "顶层酒吧，俯瞰珠江新城璀璨夜景，精选全球经典鸡尾酒与珍酿威士忌。",
+  },
 ];
 
 const facilities = [
   {
-    name: '赤醉酒吧',
-    desc: '位于饭店顶层，俯瞰珠江新城璀璨夜景，精选全球经典鸡尾酒与珍酿威士忌，营造优雅私密的社交空间。',
+    name: "赤醉酒吧",
+    desc: "位于饭店顶层，俯瞰珠江新城璀璨夜景，精选全球经典鸡尾酒与珍酿威士忌，营造优雅私密的社交空间。",
     images: [
-      '/images/guide/facilities/bar-1.jpg',
-      '/images/guide/facilities/bar-2.jpg',
-      '/images/guide/facilities/bar-3.jpg'
-    ]
+      "/images/guide/facilities/bar-1.jpg",
+      "/images/guide/facilities/bar-2.jpg",
+      "/images/guide/facilities/bar-3.jpg",
+    ],
   },
   {
-    name: 'KTV 包房',
-    desc: '配备顶级音响系统与智能点歌平台，拥有多种主题包房，是商务宴请、朋友聚会的理想之选。',
+    name: "KTV 包房",
+    desc: "配备顶级音响系统与智能点歌平台，拥有多种主题包房，是商务宴请、朋友聚会的理想之选。",
     images: [
-      '/images/guide/facilities/ktv-1.jpg',
-      '/images/guide/facilities/ktv-2.jpg',
-      '/images/guide/facilities/ktv-3.jpg'
-    ]
+      "/images/guide/facilities/ktv-1.jpg",
+      "/images/guide/facilities/ktv-2.jpg",
+      "/images/guide/facilities/ktv-3.jpg",
+    ],
   },
   {
-    name: '健身中心',
-    desc: '24 小时开放的现代化健身空间，配备顶级有氧与力量训练设备，设有瑜伽室与专业健身指导。',
+    name: "健身中心",
+    desc: "24 小时开放的现代化健身空间，配备顶级有氧与力量训练设备，设有瑜伽室与专业健身指导。",
     images: [
-      '/images/guide/facilities/gym-1.jpg',
-      '/images/guide/facilities/gym-2.jpg',
-      '/images/guide/facilities/gym-3.jpg'
-    ]
+      "/images/guide/facilities/gym-1.jpg",
+      "/images/guide/facilities/gym-2.jpg",
+      "/images/guide/facilities/gym-3.jpg",
+    ],
   },
   {
-    name: '会议中心',
-    desc: '多规格会议厅与宴会场地，配备智能多媒体设备及专业会务服务，满足各类商务活动需求。',
+    name: "会议中心",
+    desc: "多规格会议厅与宴会场地，配备智能多媒体设备及专业会务服务，满足各类商务活动需求。",
     images: [
-      '/images/guide/facilities/meeting-1.jpg',
-      '/images/guide/facilities/meeting-2.jpg',
-      '/images/guide/facilities/meeting-3.jpg'
-    ]
-  }
+      "/images/guide/facilities/meeting-1.jpg",
+      "/images/guide/facilities/meeting-2.jpg",
+      "/images/guide/facilities/meeting-3.jpg",
+    ],
+  },
 ];
 
 const loadDishes = async () => {
   dishLoading.value = true;
   try {
-    const res = await request.get('/dining/menu');
-    const dishes = (res.data || [])
-        .filter(d => d.image)
-        .slice(0, 20);
+    const res = await request.get("/dining/menu");
+    const dishes = (res.data || []).filter((d) => d.image).slice(0, 20);
     dishList.value = dishes.length ? dishes : [];
   } catch {
     dishList.value = [];
@@ -430,7 +455,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 0 60px;
-  height: 100px;          /* 加高 */
+  height: 100px; /* 加高 */
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -463,19 +488,19 @@ onMounted(() => {
   gap: 8px;
 }
 .brand-name {
-  font-size: 32px;        /* 加大 */
+  font-size: 32px; /* 加大 */
   font-weight: 600;
   color: #1a2a3a;
   letter-spacing: 6px;
 }
 .brand-sub {
-  font-size: 20px;        /* 加大 */
+  font-size: 20px; /* 加大 */
   font-weight: 300;
   color: #999;
   letter-spacing: 3px;
 }
 .brand-sub-en {
-  font-size: 14px;        /* 加大 */
+  font-size: 14px; /* 加大 */
   letter-spacing: 6px;
   color: #bbb;
   font-weight: 300;
@@ -548,8 +573,12 @@ onMounted(() => {
   max-width: 100%;
   position: relative;
 }
-.hero-section :deep(.el-carousel) { height: 640px; }
-.hero-section :deep(.el-carousel__container) { height: 640px; }
+.hero-section :deep(.el-carousel) {
+  height: 640px;
+}
+.hero-section :deep(.el-carousel__container) {
+  height: 640px;
+}
 .hero-section :deep(.el-image) {
   height: 640px;
   display: block;
@@ -563,7 +592,9 @@ onMounted(() => {
   gap: 48px;
   align-items: center;
 }
-.location-text { padding-right: 20px; }
+.location-text {
+  padding-right: 20px;
+}
 .location-info-grid {
   display: flex;
   flex-direction: column;
@@ -577,7 +608,10 @@ onMounted(() => {
   font-size: 14px;
   color: #555;
 }
-.info-icon { font-size: 18px; width: 28px; }
+.info-icon {
+  font-size: 18px;
+  width: 28px;
+}
 .promo-banner {
   display: inline-flex;
   align-items: center;
@@ -592,7 +626,9 @@ onMounted(() => {
   box-shadow: 0 4px 16px rgba(201, 169, 110, 0.35);
   margin-top: 8px;
 }
-.promo-icon { font-size: 16px; }
+.promo-icon {
+  font-size: 16px;
+}
 .map-container {
   width: 100%;
   height: 320px;
@@ -601,7 +637,10 @@ onMounted(() => {
   background: #eaeaea;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
-.bm-view { width: 100%; height: 100%; }
+.bm-view {
+  width: 100%;
+  height: 100%;
+}
 
 /* ===== 3. 空间探索（轮播） ===== */
 .explore-carousel {
@@ -609,7 +648,9 @@ onMounted(() => {
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }
-.explore-carousel :deep(.el-carousel__container) { height: 360px; }
+.explore-carousel :deep(.el-carousel__container) {
+  height: 360px;
+}
 
 .explore-item {
   display: grid;
@@ -621,7 +662,11 @@ onMounted(() => {
   height: 100%;
   overflow: hidden;
 }
-.explore-image .el-image { width: 100%; height: 100%; display: block; }
+.explore-image .el-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .explore-text {
   padding: 40px 36px;
   display: flex;
@@ -648,7 +693,6 @@ onMounted(() => {
   color: #777;
   margin-bottom: 16px;
 }
-
 
 /* ===== 4. 内部设施 ===== */
 .facilities-section {
@@ -771,20 +815,34 @@ onMounted(() => {
   justify-content: center;
   gap: 40px;
 }
-.footer-phone { color: #999; }
+.footer-phone {
+  color: #999;
+}
 
 /* ===== 登录弹窗 ===== */
-.login-dialog :deep(.el-dialog) { border-radius: 14px; }
-.login-dialog :deep(.el-dialog__header) { padding: 24px 24px 0; }
+.login-dialog :deep(.el-dialog) {
+  border-radius: 14px;
+}
+.login-dialog :deep(.el-dialog__header) {
+  padding: 24px 24px 0;
+}
 .login-dialog :deep(.el-dialog__title) {
   font-size: 18px;
   font-weight: 500;
   color: #1a2a3a;
 }
-.login-dialog :deep(.el-dialog__body) { padding: 20px 24px 12px; }
-.login-dialog :deep(.el-dialog__footer) { display: none; }
-.login-dialog :deep(.el-input__wrapper) { border-radius: 8px; }
-.login-dialog :deep(.el-input__inner) { font-size: 14px; }
+.login-dialog :deep(.el-dialog__body) {
+  padding: 20px 24px 12px;
+}
+.login-dialog :deep(.el-dialog__footer) {
+  display: none;
+}
+.login-dialog :deep(.el-input__wrapper) {
+  border-radius: 8px;
+}
+.login-dialog :deep(.el-input__inner) {
+  font-size: 14px;
+}
 .dialog-footer-hint {
   text-align: center;
   font-size: 12px;
@@ -821,38 +879,101 @@ onMounted(() => {
 }
 
 @media (max-width: 1024px) {
-  .location-content { grid-template-columns: 1fr; gap: 32px; }
-  .location-text { padding-right: 0; }
-  .section { padding: 48px 24px; }
-  .facilities-section { padding: 48px 24px 64px; }
-  .header { padding: 0 32px; height: 80px; }
-  .brand-name { font-size: 26px; letter-spacing: 4px; }
-  .brand-sub { font-size: 16px; }
-  .brand-sub-en { font-size: 12px; letter-spacing: 4px; }
-  .header-phone { font-size: 12px; }
-  .login-btn { padding: 8px 20px; font-size: 12px; }
-  .header-left { width: 150px; }
-  .header-right { width: 150px; }
+  .location-content {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .location-text {
+    padding-right: 0;
+  }
+  .section {
+    padding: 48px 24px;
+  }
+  .facilities-section {
+    padding: 48px 24px 64px;
+  }
+  .header {
+    padding: 0 32px;
+    height: 80px;
+  }
+  .brand-name {
+    font-size: 26px;
+    letter-spacing: 4px;
+  }
+  .brand-sub {
+    font-size: 16px;
+  }
+  .brand-sub-en {
+    font-size: 12px;
+    letter-spacing: 4px;
+  }
+  .header-phone {
+    font-size: 12px;
+  }
+  .login-btn {
+    padding: 8px 20px;
+    font-size: 12px;
+  }
+  .header-left {
+    width: 150px;
+  }
+  .header-right {
+    width: 150px;
+  }
 }
 
 @media (max-width: 768px) {
-  .header { padding: 0 16px; height: 64px; }
-  .header-left { width: auto; }
-  .header-phone { font-size: 11px; display: none; }
-  .brand-name { font-size: 18px; letter-spacing: 2px; }
-  .brand-sub { font-size: 13px; display: none; }
-  .brand-sub-en { font-size: 10px; letter-spacing: 2px; }
-  .login-btn { padding: 6px 14px; font-size: 12px; }
-  .login-btn span { display: none; }
-  .header-right { width: auto; }
-  .section { padding: 32px 16px; }
-  .facilities-section { padding: 32px 16px 48px; }
+  .header {
+    padding: 0 16px;
+    height: 64px;
+  }
+  .header-left {
+    width: auto;
+  }
+  .header-phone {
+    font-size: 11px;
+    display: none;
+  }
+  .brand-name {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  .brand-sub {
+    font-size: 13px;
+    display: none;
+  }
+  .brand-sub-en {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .login-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .login-btn span {
+    display: none;
+  }
+  .header-right {
+    width: auto;
+  }
+  .section {
+    padding: 32px 16px;
+  }
+  .facilities-section {
+    padding: 32px 16px 48px;
+  }
   .facilities-section .section-header {
     margin-bottom: 32px;
   }
-  .hero-section :deep(.el-carousel) { height: 320px; }
-  .hero-section :deep(.el-carousel__container) { height: 320px; }
-  .hero-section :deep(.el-image) { height: 320px; }
+  .hero-section :deep(.el-carousel) {
+    height: 320px;
+  }
+  .hero-section :deep(.el-carousel__container) {
+    height: 320px;
+  }
+  .hero-section :deep(.el-image) {
+    height: 320px;
+  }
   .facilities-grid {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
@@ -863,19 +984,52 @@ onMounted(() => {
   .facility-carousel :deep(.el-image) {
     height: 240px;
   }
-  .facility-info { padding: 12px 14px 16px; }
-  .facility-name { font-size: 15px; }
-  .facility-desc { font-size: 12px; line-height: 1.6; }
-  .explore-item { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-  .explore-carousel :deep(.el-carousel__container) { height: 500px; }
-  .explore-text { padding: 20px 16px; }
-  .explore-title { font-size: 17px; }
-  .dish-item { width: 140px; }
-  .dish-item .el-image { height: 140px !important; width: 140px !important; }
-  .location-info-grid { gap: 8px; }
-  .promo-banner { font-size: 12px; padding: 8px 16px; flex-wrap: wrap; }
-  .map-container { height: 240px; }
-  .footer { flex-direction: column; gap: 8px; padding: 24px 16px; }
+  .facility-info {
+    padding: 12px 14px 16px;
+  }
+  .facility-name {
+    font-size: 15px;
+  }
+  .facility-desc {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .explore-item {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .explore-carousel :deep(.el-carousel__container) {
+    height: 500px;
+  }
+  .explore-text {
+    padding: 20px 16px;
+  }
+  .explore-title {
+    font-size: 17px;
+  }
+  .dish-item {
+    width: 140px;
+  }
+  .dish-item .el-image {
+    height: 140px !important;
+    width: 140px !important;
+  }
+  .location-info-grid {
+    gap: 8px;
+  }
+  .promo-banner {
+    font-size: 12px;
+    padding: 8px 16px;
+    flex-wrap: wrap;
+  }
+  .map-container {
+    height: 240px;
+  }
+  .footer {
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 16px;
+  }
 }
 
 @media (max-width: 480px) {

@@ -62,72 +62,78 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from "element-plus"
-import request from '@/utils/request'
+import { ref, onMounted } from "vue";
+import { ElMessage } from "element-plus";
+import request from "@/utils/request";
 
-const currentDate = ref('')
-const todayOrderCount = ref(0)
-const todayRevenue = ref(0)
-const ktvUsing = ref(0)
-const totalKtv = ref(0)
-const unsettledCount = ref(0)
+const currentDate = ref("");
+const todayOrderCount = ref(0);
+const todayRevenue = ref(0);
+const ktvUsing = ref(0);
+const totalKtv = ref(0);
+const unsettledCount = ref(0);
 
 const getNowDate = () => {
-  const date = new Date()
-  currentDate.value = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`
-}
+  const date = new Date();
+  currentDate.value = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+};
 
 const getDashboardData = async () => {
   try {
-    const res = await request.get('/waiter/dashboard')
+    const res = await request.get("/waiter/dashboard");
     if (res.code === 200) {
-      const data = res.data
-      todayOrderCount.value = data.todayOrderCount
-      todayRevenue.value = data.todayRevenue
-      ktvUsing.value = data.ktvUsing
-      totalKtv.value = data.totalKtv
-      unsettledCount.value = data.unsettledCount
-      getNowDate()
-      ElMessage.success('数据刷新成功')
+      const data = res.data;
+      todayOrderCount.value = data.todayOrderCount;
+      todayRevenue.value = data.todayRevenue;
+      ktvUsing.value = data.ktvUsing;
+      totalKtv.value = data.totalKtv;
+      unsettledCount.value = data.unsettledCount;
+      getNowDate();
+      ElMessage.success("数据刷新成功");
     }
   } catch (err) {
-    ElMessage.error('后端未启动或接口异常')
-    console.error(err)
+    ElMessage.error("后端未启动或接口异常");
+    console.error(err);
   }
-}
+};
 
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
 const handleCheckStock = async () => {
   try {
-    const res = await request.get('/warehouse/warning')
-    const warningList = res.data || []
+    const res = await request.get("/warehouse/warning");
+    const warningList = res.data || [];
     if (warningList.length === 0) {
-      ElMessage.success('所有库存正常，没有低于预警线的物品')
+      ElMessage.success("所有库存正常，没有低于预警线的物品");
     } else {
       // 取前3个物品名称作为摘要
-      const names = warningList.slice(0, 3).map(item => `${item.itemName}（${item.currentQuantity}${item.unit || '件'}）`).join('、')
-      const more = warningList.length > 3 ? `等${warningList.length}项` : ''
+      const names = warningList
+        .slice(0, 3)
+        .map(
+          (item) =>
+            `${item.itemName}（${item.currentQuantity}${item.unit || "件"}）`,
+        )
+        .join("、");
+      const more = warningList.length > 3 ? `等${warningList.length}项` : "";
       ElMessage({
         message: `⚠️ ${names}${more} 库存低于预警线，点击查看详情`,
-        type: 'warning',
+        type: "warning",
         duration: 5000,
         onClick: () => {
-          router.push('/warehouse/stock')  // 跳转到库存管理页面
-        }
-      })
+          router.push("/warehouse/stock"); // 跳转到库存管理页面
+        },
+      });
     }
   } catch (err) {
-    console.error('获取库存预警数据失败:', err)
-    ElMessage.error('获取库存预警数据失败，请稍后重试')
+    console.error("获取库存预警数据失败:", err);
+    ElMessage.error("获取库存预警数据失败，请稍后重试");
   }
-}
+};
 onMounted(() => {
-  getDashboardData()
-})
+  getDashboardData();
+});
 </script>
 
 <style scoped>
@@ -206,10 +212,18 @@ onMounted(() => {
   justify-content: center;
   font-size: 26px;
 }
-.card-icon.green { background: #e6f7ef; }
-.card-icon.orange { background: #fff7e6; }
-.card-icon.blue { background: #e6f7ff; }
-.card-icon.red { background: #fff1f0; }
+.card-icon.green {
+  background: #e6f7ef;
+}
+.card-icon.orange {
+  background: #fff7e6;
+}
+.card-icon.blue {
+  background: #e6f7ff;
+}
+.card-icon.red {
+  background: #fff1f0;
+}
 .quick-section h3 {
   font-size: 16px;
   color: #333;

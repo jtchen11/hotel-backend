@@ -1,51 +1,69 @@
 <template>
-  <div style="display: none;"></div>
+  <div style="display: none"></div>
 </template>
 
 <script setup>
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 const print = async (salaryId) => {
   try {
     // 1. 获取工资详情（包含员工信息和各项明细）
-    const res = await request.get(`/hr/salary/detail/${salaryId}`)
-    const data = res.data
+    const res = await request.get(`/hr/salary/detail/${salaryId}`);
+    const data = res.data;
 
     // 计算扣款明细
-    const deductions = []
+    const deductions = [];
     if (data.lateCount > 0) {
-      deductions.push({ name: '迟到扣款', amount: data.lateCount * 20, count: data.lateCount, unit: '次', rate: '20元/次' })
+      deductions.push({
+        name: "迟到扣款",
+        amount: data.lateCount * 20,
+        count: data.lateCount,
+        unit: "次",
+        rate: "20元/次",
+      });
     }
     if (data.earlyLeaveCount > 0) {
-      deductions.push({ name: '早退扣款', amount: data.earlyLeaveCount * 20, count: data.earlyLeaveCount, unit: '次', rate: '20元/次' })
+      deductions.push({
+        name: "早退扣款",
+        amount: data.earlyLeaveCount * 20,
+        count: data.earlyLeaveCount,
+        unit: "次",
+        rate: "20元/次",
+      });
     }
     if (data.absentCount > 0) {
-      const dailyWage = (data.baseSalary / 21.75).toFixed(2)
+      const dailyWage = (data.baseSalary / 21.75).toFixed(2);
       deductions.push({
-        name: '明确旷工扣款',
+        name: "明确旷工扣款",
         amount: data.absentCount * dailyWage,
         count: data.absentCount,
-        unit: '天',
-        rate: `日工资 ¥${dailyWage}`
-      })
+        unit: "天",
+        rate: `日工资 ¥${dailyWage}`,
+      });
     }
     if (data.missingDays > 0) {
-      const dailyWage = (data.baseSalary / 21.75).toFixed(2)
+      const dailyWage = (data.baseSalary / 21.75).toFixed(2);
       deductions.push({
-        name: '缺勤/无记录扣款',
+        name: "缺勤/无记录扣款",
         amount: data.missingDays * dailyWage,
         count: data.missingDays,
-        unit: '天',
-        rate: `日工资 ¥${dailyWage}（无打卡记录）`
-      })
+        unit: "天",
+        rate: `日工资 ¥${dailyWage}（无打卡记录）`,
+      });
     }
     if (data.leaveDays > 0) {
-      const dailyWage = (data.baseSalary / 21.75).toFixed(2)
-      deductions.push({ name: '请假扣款', amount: data.leaveDays * dailyWage, count: data.leaveDays, unit: '天', rate: `日工资 ¥${dailyWage}` })
+      const dailyWage = (data.baseSalary / 21.75).toFixed(2);
+      deductions.push({
+        name: "请假扣款",
+        amount: data.leaveDays * dailyWage,
+        count: data.leaveDays,
+        unit: "天",
+        rate: `日工资 ¥${dailyWage}`,
+      });
     }
 
     // 构建打印内容
-    const printWindow = window.open('', '_blank')
+    const printWindow = window.open("", "_blank");
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -180,9 +198,9 @@ const print = async (salaryId) => {
 
           <div class="emp-info">
             <div><span class="label">员工姓名</span>：<span class="value">${data.empName}</span></div>
-            <div><span class="label">部门</span>：<span class="value">${data.department || '-'}</span></div>
-            <div><span class="label">职务</span>：<span class="value">${data.position || '-'}</span></div>
-            <div><span class="label">发放状态</span>：<span class="value" style="color:${data.payStatus === '已发放' ? '#67c23a' : '#f56c6c'}">${data.payStatus}</span></div>
+            <div><span class="label">部门</span>：<span class="value">${data.department || "-"}</span></div>
+            <div><span class="label">职务</span>：<span class="value">${data.position || "-"}</span></div>
+            <div><span class="label">发放状态</span>：<span class="value" style="color:${data.payStatus === "已发放" ? "#67c23a" : "#f56c6c"}">${data.payStatus}</span></div>
           </div>
 
           <div class="section-title">📊 薪酬明细</div>
@@ -194,28 +212,36 @@ const print = async (salaryId) => {
             <div class="item"><span class="label">其他扣款</span><span class="amount negative">-¥${(data.otherDeduct || 0).toFixed(2)}</span></div>
           </div>
 
-          ${deductions.length ? `
+          ${
+            deductions.length
+              ? `
             <div class="section-title">📋 考勤扣款明细</div>
             <table class="deduction-table">
               <thead>
                 <tr><th>扣款项目</th><th>次数/天数</th><th>扣款标准</th><th style="text-align:right;">扣款金额</th></tr>
               </thead>
               <tbody>
-                ${deductions.map(d => `
+                ${deductions
+                  .map(
+                    (d) => `
                   <tr>
                     <td>${d.name}</td>
                     <td>${d.count} ${d.unit}</td>
                     <td>${d.rate}</td>
                     <td style="text-align:right; color:#f56c6c;">-¥${d.amount.toFixed(2)}</td>
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
                 <tr class="total-row">
                   <td colspan="3" style="text-align:right;">扣款合计</td>
                   <td style="text-align:right; color:#f56c6c;">-¥${data.attendanceDeduction.toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>
-          ` : '<p style="color:#909399; font-size:13px; padding:6px 0;">本月无考勤扣款</p>'}
+          `
+              : '<p style="color:#909399; font-size:13px; padding:6px 0;">本月无考勤扣款</p>'
+          }
 
           <div class="total-line">
             <span class="label">实发工资</span>
@@ -229,16 +255,16 @@ const print = async (salaryId) => {
         </div>
       </body>
       </html>
-    `)
-    printWindow.document.close()
-    printWindow.print()
+    `);
+    printWindow.document.close();
+    printWindow.print();
     // 打印完成后关闭窗口（延迟以允许打印）
-    setTimeout(() => printWindow.close(), 1000)
+    setTimeout(() => printWindow.close(), 1000);
   } catch (err) {
-    console.error('打印工资条失败', err)
-    alert('打印失败，请检查网络或联系管理员')
+    console.error("打印工资条失败", err);
+    alert("打印失败，请检查网络或联系管理员");
   }
-}
+};
 
-defineExpose({ print })
+defineExpose({ print });
 </script>
