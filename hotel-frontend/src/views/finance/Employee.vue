@@ -323,8 +323,8 @@
         </el-form-item>
         <el-form-item label="密码">
           <el-input
-            v-model="addForm.password"
-            placeholder="不填默认为123456"
+            v-model="editForm.password"
+            placeholder="留空不修改 | 8~20位字母+数字组合"
             show-password
           />
         </el-form-item>
@@ -391,7 +391,7 @@
         <el-form-item label="密码">
           <el-input
             v-model="addForm.password"
-            placeholder="不填默认为123456"
+            placeholder="不填默认为abc123456 | 8~20位字母+数字组合"
             show-password
           />
         </el-form-item>
@@ -440,6 +440,7 @@ const editForm = reactive({
   position: "",
   baseSalary: 0,
   role: "",
+  password: "",
 });
 const addDialogVisible = ref(false);
 const addForm = reactive({
@@ -472,8 +473,8 @@ const editRules = {
   password: [
     {
       validator: (rule, value, callback) => {
-        if (value && !/^\d{6}$/.test(value)) {
-          callback(new Error("密码必须为6位数字"));
+        if (value && !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(value)) {
+          callback(new Error("密码必须为8~20位字母+数字组合"));
         } else {
           callback();
         }
@@ -503,8 +504,8 @@ const addRules = {
   password: [
     {
       validator: (rule, value, callback) => {
-        if (value && !/^\d{6}$/.test(value)) {
-          callback(new Error("密码必须为6位数字"));
+        if (value && !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/.test(value)) {
+          callback(new Error("密码必须为8~20位字母+数字组合"));
         } else {
           callback();
         }
@@ -671,12 +672,16 @@ const submitAdd = async () => {
 // 编辑
 const openEditDialog = () => {
   Object.assign(editForm, currentEmployee.value);
+  editForm.password = "";
   editDialogVisible.value = true;
 };
 const submitEdit = async () => {
   await editFormRef.value.validate();
   const submitData = { ...editForm };
   delete submitData.idCard;
+  if (!submitData.password) {
+    delete submitData.password;
+  }
   await updateEmployee(submitData);
   ElMessage.success("修改成功");
   editDialogVisible.value = false;

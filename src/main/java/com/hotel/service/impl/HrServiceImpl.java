@@ -14,6 +14,7 @@ import com.hotel.mapper.AttendanceMapper;
 import com.hotel.mapper.EmployeeMapper;
 import com.hotel.mapper.SalaryMapper;
 import com.hotel.service.HrService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,9 @@ public class HrServiceImpl implements HrService {
     private AttendanceMapper attendanceMapper;
     @Autowired
     private SalaryMapper salaryMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // ========== 员工管理 ==========
     @Override
@@ -96,7 +100,9 @@ public class HrServiceImpl implements HrService {
             employee.setHireDate(LocalDate.now());
         }
         if (employee.getPassword() == null || employee.getPassword().isEmpty()) {
-            employee.setPassword("123456");
+            employee.setPassword(passwordEncoder.encode("abc123456"));
+        } else {
+            employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         }
         employee.setCreateTime(LocalDateTime.now());
         employeeMapper.insert(employee);
@@ -108,6 +114,8 @@ public class HrServiceImpl implements HrService {
         if (employee.getPassword() == null || employee.getPassword().isEmpty()) {
             Employee existing = employeeMapper.selectById(employee.getEmpId());
             employee.setPassword(existing.getPassword());
+        } else {
+            employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         }
         employeeMapper.updateById(employee);
         return Result.success();

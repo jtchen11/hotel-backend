@@ -2,28 +2,51 @@ package com.hotel.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * JWT 工具类 — 密钥和过期时间从 application.yml 读取
+ */
+@Component
 public class JwtUtils {
-    private static final String SECRET = "hotel2026!@#";  // 密钥
-    private static final long EXPIRE = 1000 * 60 * 60 * 12; // 12小时
+
+    private static String secret;
+    private static long expire;
+
+    public JwtUtils(@Value("${jwt.secret}") String secret,
+                    @Value("${jwt.expire}") long expire) {
+        JwtUtils.secret = secret;
+        JwtUtils.expire = expire;
+    }
+
+    private static SecretKey getKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public static String generateToken(Integer empId, String empName, String role) {
         return Jwts.builder()
                 .claim("empId", empId)
                 .claim("empName", empName)
                 .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expire))
+                .signWith(getKey())
                 .compact();
     }
 
     public static Claims parseToken(String token) {
         try {
-            return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+            return Jwts.parser()
+                    .verifyWith(getKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
         } catch (Exception e) {
             return null;
         }

@@ -16,3 +16,9 @@ mybatis-plus:
     db-config:
       id-type: auto
       column-format: "`%s`"
+
+# JWT 配置
+jwt:
+  secret: hotel2026!@#SuperSecretKeyForHS256Algorithm
+  expire: 43200000  # 12小时，单位毫秒
+

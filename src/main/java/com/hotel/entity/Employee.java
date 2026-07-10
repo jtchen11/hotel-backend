@@ -34,7 +34,7 @@ public class Employee {
             message = "手机号格式不正确")
     private String phone;
 
-    @Pattern(regexp = "^\\d{6}$",
-            message = "密码必须为6位数字")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",
+            message = "密码必须为8~20位字母+数字组合")
     private String password; // 注意：新增时可为空，编辑时可为空（表示不修改）
 }

@@ -5,6 +5,10 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+    <!-- 项目描述 -->
+    <name>hotel-backend</name>
+    <description>Hotel Management Information System - 饭店管理信息系统</description>
     <groupId>com.hotel</groupId>
     <artifactId>hotel-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -18,7 +22,11 @@
     </parent>
 
     <properties>
-        <java.version>11</java.version> <!-- 也可用 1.8 或 17，推荐 11 -->
+        <!-- JJWT 版本 -->
+        <jjwt.version>0.12.6</jjwt.version>
+        <!-- Spring Security Crypto（仅 BCrypt） -->
+        <spring-security.version>5.7.12</spring-security.version>
+        <java.version>11</java.version> <!-- 涔熷彲鐢?1.8 鎴?17锛屾帹鑽?11 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -52,21 +60,26 @@
             <version>3.5.3</version>
         </dependency>
 
-        <!-- JWT (JJWT) -->
+        <!-- JWT (JJWT) 0.12.x -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
         </dependency>
-
-        <!-- JAXB API (JDK 9+ 需要，用于 JWT) -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok (可选，简化 getter/setter) -->
+        <!-- Lombok (鍙€夛紝绠€鍖?getter/setter) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -74,7 +87,14 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hutool 工具库（可选，提供常用工具） -->
+                <!-- Spring Security Crypto（BCrypt 密码加密） -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+
+<!-- Hutool 宸ュ叿搴擄紙鍙€夛紝鎻愪緵甯哥敤宸ュ叿锛?-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
@@ -95,6 +115,23 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
 </project>
+
