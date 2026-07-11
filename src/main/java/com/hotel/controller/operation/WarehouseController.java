@@ -22,7 +22,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/warehouse")
-@CrossOrigin
 public class WarehouseController {
 
     @Resource

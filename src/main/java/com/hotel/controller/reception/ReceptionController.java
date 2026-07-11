@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/reception")
-@CrossOrigin
 public class ReceptionController {
 
     @Autowired

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reception/message")
-@CrossOrigin
 public class MessageController {
 
     @Autowired
