@@ -149,7 +149,7 @@ public class SettleServiceImpl implements SettleService {
      * 版本3：完整结账（有折扣 + 指定支付方式）—— 真正的业务逻辑在这里
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Result<Map<String, Object>> settle(Integer guestId, BigDecimal discountRate, String payMethod) {
         // 1. 获取预览数据
         Result<SettlePreviewDTO> previewResult = preview(guestId, discountRate);

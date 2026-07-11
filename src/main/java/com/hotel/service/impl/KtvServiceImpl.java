@@ -44,7 +44,7 @@ public class KtvServiceImpl implements KtvService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void startKtv(Integer ktvId, Integer guestId, String operator) {
         Guest guest = guestService.getById(guestId);
         if (guest == null || !"在住".equals(guest.getStatus())) {
@@ -79,7 +79,7 @@ public class KtvServiceImpl implements KtvService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void endKtv(Integer guestId, String operator, BigDecimal customDuration) {
         LambdaQueryWrapper<KtvRecord> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(KtvRecord::getGuestId, guestId).isNull(KtvRecord::getEndTime);
@@ -173,7 +173,7 @@ public class KtvServiceImpl implements KtvService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void changeStatus(Integer ktvId, String status) {
         KtvRoom room = ktvRoomMapper.selectById(ktvId);
         if (room == null) {

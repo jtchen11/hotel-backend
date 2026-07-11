@@ -163,8 +163,9 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  // 检查角色权限
-  if (to.meta.roles && !to.meta.roles.includes(role)) {
+  // 检查角色权限（遍历所有匹配路由，解决子路由 meta.roles 丢失问题）
+  const requiredRoles = to.matched.flatMap(record => record.meta.roles || []);
+  if (requiredRoles.length > 0 && !requiredRoles.includes(role)) {
     next("/login");
     return;
   }

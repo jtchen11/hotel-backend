@@ -90,7 +90,7 @@ public class GuestServiceImpl implements GuestService {
     }
 
     // ———————— 新增：散客入住 ————————
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean checkIn(Guest guest) {
         // 校验房间是否空闲
         Room room = roomMapper.selectById(guest.getRoomId());
@@ -114,7 +114,7 @@ public class GuestServiceImpl implements GuestService {
     }
 
     // ———————— 新增：换房 ————————
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean changeRoom(Integer guestId, Integer newRoomId) {
         // 获取客人信息
         Guest guest = guestMapper.selectById(guestId);

@@ -25,7 +25,7 @@ public class DepositServiceImpl implements DepositService {
     private DepositMapper depositMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Result<Void> addDeposit(DepositDTO dto) {
         // 1. 参数基础校验
         if (dto.getGuestId() == null) return Result.error("客人ID不能为空");

@@ -71,7 +71,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean addStockNum(Integer stockId, Integer inNum) {
         if (stockId == null || inNum == null || inNum <= 0) {
             throw new RuntimeException("入库参数异常");
@@ -89,7 +89,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean subStockNum(Integer stockId, Integer outNum) {
         if (stockId == null || outNum == null || outNum <= 0) {
             throw new RuntimeException("出库参数异常");
