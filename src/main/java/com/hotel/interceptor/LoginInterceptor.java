@@ -19,7 +19,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String uri = request.getRequestURI();
         // 精确匹配登录接口，放行
-        if ("/api/login".equals(uri)) {
+        if ("/api/login".equals(uri) || "/api/login/failCount".equals(uri) || uri.startsWith("/api/captcha")) {
             return true;
         }
 
@@ -42,6 +42,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         String empName = claims.get("empName", String.class);
         String role = claims.get("role", String.class);
         UserContext.set(empId, empName, role);
+
+        // JWT 滑动过期：剩余时间少于5分钟则自动续期
+        long remain = JwtUtils.getRemainingTime(claims);
+        if (remain > 0 && remain < 300000) {
+            String newToken = JwtUtils.generateToken(empId, empName, role);
+            response.setHeader("X-Auth-Token", newToken);
+        }
 
         // 前台接待员接口
         if (uri.startsWith("/api/reception") || uri.startsWith("/api/room")) {

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="stock-page">
     <div class="page-header">
       <h2>库房管理</h2>

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="waiter-dashboard">
     <!-- 顶部标题区域 -->
     <div class="dashboard-header">

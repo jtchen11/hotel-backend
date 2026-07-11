@@ -6,4 +6,6 @@ import lombok.Data;
 public class LoginDTO {
     private String empName;
     private String password;
+    private String captcha;
+    private String captchaKey;
 }

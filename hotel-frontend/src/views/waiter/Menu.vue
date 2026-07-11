@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="menu-container">
     <div class="header-card">
       <h2 class="title">餐饮菜单</h2>

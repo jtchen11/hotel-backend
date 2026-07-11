@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -6,9 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
 
 
-    <!-- 项目描述 -->
+    <!-- 椤圭洰鎻忚堪 -->
     <name>hotel-backend</name>
-    <description>Hotel Management Information System - 饭店管理信息系统</description>
+    <description>Hotel Management Information System - 楗簵绠＄悊淇℃伅绯荤粺</description>
     <groupId>com.hotel</groupId>
     <artifactId>hotel-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -22,11 +22,11 @@
     </parent>
 
     <properties>
-        <!-- JJWT 版本 -->
+        <!-- JJWT 鐗堟湰 -->
         <jjwt.version>0.12.6</jjwt.version>
-        <!-- Spring Security Crypto（仅 BCrypt） -->
+        <!-- Spring Security Crypto锛堜粎 BCrypt锛?-->
         <spring-security.version>5.7.12</spring-security.version>
-        <java.version>11</java.version> <!-- 涔熷彲鐢?1.8 鎴?17锛屾帹鑽?11 -->
+        <java.version>11</java.version> <!-- 娑旂喎褰查悽?1.8 閹?17閿涘本甯归懡?11 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -79,7 +79,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok (鍙€夛紝绠€鍖?getter/setter) -->
+        <!-- Lombok (閸欘垶鈧绱濈粻鈧崠?getter/setter) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -87,18 +87,32 @@
             <scope>provided</scope>
         </dependency>
 
-                <!-- Spring Security Crypto（BCrypt 密码加密） -->
+                <!-- Spring Security Crypto锛圔Crypt 瀵嗙爜鍔犲瘑锛?-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
             <version>${spring-security.version}</version>
         </dependency>
 
-<!-- Hutool 宸ュ叿搴擄紙鍙€夛紝鎻愪緵甯哥敤宸ュ叿锛?-->
+<!-- Hutool 瀹搞儱鍙挎惔鎿勭礄閸欘垶鈧绱濋幓鎰返鐢摜鏁ゅ銉ュ徔閿?-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.20</version>
+        </dependency>
+
+        <!-- Kaptcha 验证码 -->
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+        <!-- SpringDoc API 文档 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version>
         </dependency>
 
         <!-- Spring Boot Test -->
@@ -135,4 +149,5 @@
     </build>
 
 </project>
+
 

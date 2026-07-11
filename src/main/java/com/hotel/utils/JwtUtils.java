@@ -40,6 +40,12 @@ public class JwtUtils {
                 .compact();
     }
 
+    public static long getRemainingTime(Claims claims) {
+        long now = System.currentTimeMillis();
+        long exp = claims.getExpiration().getTime();
+        return exp - now;
+    }
+
     public static Claims parseToken(String token) {
         try {
             return Jwts.parser()

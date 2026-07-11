@@ -142,15 +142,32 @@ const router = createRouter({
 });
 
 // 路由守卫：检查登录 + 角色权限
+
+// decode JWT payload to check expiration
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   const token = userStore.token;
   const role = userStore.userInfo.role;
 
-  if (to.path === "/login") {
+  // redirect if token expired
+  if (token && isTokenExpired(token)) {
+    userStore.logout();
+    next('/login');
+    return;
+  }
+
+  if (to.path === '/login') {
     if (token) {
-      // 已登录，跳转到对应主页
-      const homePath = roleHomeMap[role] || "/login";
+      const homePath = roleHomeMap[role] || '/login';
       next(homePath);
     } else {
       next();
@@ -159,14 +176,13 @@ router.beforeEach((to, from, next) => {
   }
 
   if (!token) {
-    next("/login");
+    next('/login');
     return;
   }
 
-  // 检查角色权限（遍历所有匹配路由，解决子路由 meta.roles 丢失问题）
   const requiredRoles = to.matched.flatMap(record => record.meta.roles || []);
   if (requiredRoles.length > 0 && !requiredRoles.includes(role)) {
-    next("/login");
+    next('/login');
     return;
   }
 

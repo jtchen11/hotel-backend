@@ -6,6 +6,7 @@ import { useUserStore } from "@/store/user";
 const request = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15000,
+  withCredentials: true,
 });
 
 // 请求拦截器：添加 token + 打印日志（合并）
@@ -25,6 +26,11 @@ request.interceptors.request.use(
 // 响应拦截器：处理统一错误
 request.interceptors.response.use(
   (response) => {
+    // JWT 滑动过期：从响应头获取新 token 并更新
+    const newToken = response.headers["x-auth-token"];
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+    }
     const res = response.data;
     if (res.code !== 200) {
       ElMessage.error(res.msg || "请求失败");

@@ -46,7 +46,7 @@
         <div class="location-content">
           <div class="location-text">
             <div class="section-label">— 地理位置 —</div>
-            <h2 class="section-title">抵达橙皮荔</h2>
+            <h2 class="section-title">抵达橙皮荔饭店</h2>
             <p class="text-body">
               饭店位于广东省广州市天河区珠江东路6号（广州周大福金融中心），<br />
               地处珠江新城核心区域，毗邻花城广场、广州塔。
@@ -203,8 +203,7 @@
 
       <!-- 底部 -->
       <footer class="footer">
-        <span>橙皮荔饭店 · 服务指南 </span>
-        <span class="footer-phone">📞 +86 020-8888-6666</span>
+        <span>橙皮荔饭店 · 服务指南 </span>· 服务指南<span class="footer-phone">📞 +86 020-8888-6666</span>
       </footer>
     </main>
 
@@ -238,6 +237,27 @@
             @keyup.enter="handleLogin"
           />
         </el-form-item>
+        <!-- 验证码 -->
+        <el-form-item v-if="requireCaptcha" prop="captcha">
+          <div style="display: flex; gap: 10px; align-items: stretch; width: 100%;">
+            <el-input
+              v-model="form.captcha"
+              placeholder="验证码"
+              prefix-icon="Key"
+              size="large"
+              style="flex: 1;"
+              @keyup.enter="handleLogin"
+            />
+            <img
+              v-if="captchaImage"
+              :src="captchaImage"
+              alt="验证码"
+              style="height: 40px; cursor: pointer; border-radius: 4px; border: 1px solid #dcdfe6;"
+              @click="fetchCaptcha"
+              title="点击刷新验证码"
+            />
+          </div>
+        </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
@@ -268,11 +288,43 @@ const userStore = useUserStore();
 const loginFormRef = ref();
 const loading = ref(false);
 const showLoginDialog = ref(false);
+const requireCaptcha = ref(false);
+const captchaImage = ref("");
+const captchaKey = ref(crypto.randomUUID());
 
 const form = reactive({
   empName: "",
   password: "",
+  captcha: "",
+  captchaKey: "",
 });
+
+const fetchCaptcha = async () => {
+  try {
+    const res = await request.get("/captcha");
+    if (res.code === 200) {
+      captchaKey.value = res.data.key;
+      captchaImage.value = res.data.image;
+    }
+  } catch (e) {
+    console.error("captcha fetch error", e);
+  }
+};
+
+const checkFailCount = async (username) => {
+  try {
+    const res = await request.get("/login/failCount?username=" + username);
+    if (res.code === 200) {
+      requireCaptcha.value = res.data.requireCaptcha;
+      if (requireCaptcha.value && !captchaImage.value) {
+        form.captcha = "";
+        await fetchCaptcha();
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 const rules = {
   empName: [{ required: true, message: "请输入用户名", trigger: "blur" }],
@@ -287,6 +339,9 @@ const handleLogin = async () => {
   }
   loading.value = true;
   try {
+    if (requireCaptcha.value) {
+      form.captchaKey = captchaKey.value;
+    }
     const res = await login(form);
     if (res.code === 200) {
       const { token, userInfo } = res.data;
@@ -303,10 +358,14 @@ const handleLogin = async () => {
       router.push(roleHome[userInfo.role] || "/");
     } else {
       ElMessage.error(res.msg || "登录失败");
+      await checkFailCount(form.empName);
     }
   } catch (err) {
     console.error(err);
-    ElMessage.error("登录异常，请稍后重试");
+    if (err.message === '验证码错误') {
+      await fetchCaptcha();
+    }
+    await checkFailCount(form.empName);
   } finally {
     loading.value = false;
   }

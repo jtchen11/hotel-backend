@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="finance-dashboard">
     <!-- 统计卡片 -->
     <el-row :gutter="20" class="stats-row">

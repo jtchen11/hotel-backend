@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.ToString;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ public class Guest {
     private String company;
     private String occupation;
     private String reason;
+    @ToString.Exclude
     private String idCard;
     private String phone;
     private LocalDateTime checkInDate;

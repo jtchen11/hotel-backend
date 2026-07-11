@@ -8,6 +8,8 @@ import com.hotel.entity.*;
 import com.hotel.mapper.*;
 import com.hotel.service.GuestService;
 import com.hotel.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,7 @@ public class ReceptionController {
 
     // ========== 散客入住 ==========
     // ========== 散客入住 ==========
+    @Operation(summary = "散客入住登记")
     @PostMapping("/checkin")
     @Transactional(rollbackFor = Exception.class)
     public Result<Map<String, Object>> checkIn(@RequestBody Map<String, Object> params) {
@@ -112,6 +115,7 @@ public class ReceptionController {
     }
 
     // ========== 团体入住（修复冲突、日期、身份证） ==========
+    @Operation(summary = "团体入住登记")
     @PostMapping("/groupcheckin")
     @Transactional(rollbackFor = Exception.class)
     public Result<?> groupCheckIn(@RequestBody Map<String, Object> params) {
@@ -203,6 +207,7 @@ public class ReceptionController {
     }
 
     // ========== 换房接口（新增） ==========
+    @Operation(summary = "换房操作")
     @PostMapping("/changeRoom")
     @Transactional(rollbackFor = Exception.class)
     public Result<?> changeRoom(@RequestParam Integer guestId, @RequestParam Integer newRoomId) {
@@ -248,6 +253,7 @@ public class ReceptionController {
         return Result.success("换房成功");
     }
 
+    @Operation(summary = "更新房间状态")
     @PutMapping("/room/updateStatus")
     public Result<?> updateRoomStatus(Integer roomId, String status) {
         Room room = roomMapper.selectById(roomId);
@@ -261,6 +267,7 @@ public class ReceptionController {
         return Result.success("ok");
     }
 
+    @Operation(summary = "按日期查询房间状态列表")
     @GetMapping("/room/dateList")
     public Result<List<Map<String, Object>>> getRoomDateList(
             @RequestParam String inDate,
@@ -292,6 +299,7 @@ public class ReceptionController {
         return Result.success(list);
     }
 
+    @Operation(summary = "退房操作")
     @PostMapping("/checkout")
     public Result<?> checkout(@RequestParam Integer roomId) {
         // 保留原逻辑，但前台可能不再调用此接口（改为跳转财务）
@@ -308,6 +316,7 @@ public class ReceptionController {
         return Result.success("退房成功");
     }
 
+    @Operation(summary = "获取在住客人列表")
     @GetMapping("/living-list")
     public Result<?> livingList() {
         QueryWrapper<Guest> qw = new QueryWrapper<>();
@@ -315,12 +324,14 @@ public class ReceptionController {
         return Result.success(guestMapper.selectList(qw));
     }
 
+    @Operation(summary = "获取未读消息数")
     @GetMapping("/messages/unread")
     public Result<Integer> unread() {
         QueryWrapper<Message> qw = new QueryWrapper<>();
         qw.eq("is_read", 0);
         return Result.success(messageMapper.selectCount(qw).intValue());
     }
+    @Operation(summary = "获取在住客人及消费信息")
     @GetMapping("/livingWithConsume")
     public Result<List<Map<String, Object>>> livingWithConsume() {
         QueryWrapper<Guest> qw = new QueryWrapper<>();
@@ -353,6 +364,7 @@ public class ReceptionController {
     }
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Operation(summary = "获取待办理入住列表")
     @GetMapping("/pendingBookings")
     public Result<List<Map<String, Object>>> pendingBookings() {
         QueryWrapper<Guest> qw = new QueryWrapper<>();
@@ -375,6 +387,7 @@ public class ReceptionController {
         }
         return Result.success(result);
     }
+    @Operation(summary = "预订客人办理入住")
     @PostMapping("/checkinFromBooking")
     @Transactional
     public Result<?> checkinFromBooking(@RequestBody Map<String, Object> params) {
@@ -431,6 +444,7 @@ public class ReceptionController {
     }
     @Autowired
     private DepositMapper depositMapper;
+    @Operation(summary = "获取房间预订信息")
     @GetMapping("/room/bookings/{roomId}")
     public Result<List<Map<String, Object>>> getRoomBookings(@PathVariable Integer roomId) {
         QueryWrapper<Guest> qw = new QueryWrapper<>();
@@ -450,6 +464,7 @@ public class ReceptionController {
         }
         return Result.success(result);
     }
+    @Operation(summary = "取消预订")
     @PostMapping("/cancelBooking")
     @Transactional
     public Result<?> cancelBooking(@RequestParam Integer guestId) {
@@ -463,6 +478,7 @@ public class ReceptionController {
      * 登记物品损坏
      * @param params { roomId, itemName, amount }
      */
+    @Operation(summary = "登记物品损坏赔偿")
     @PostMapping("/damage")
     @Transactional(rollbackFor = Exception.class)
     public Result<?> registerDamage(@RequestBody Map<String, Object> params) {

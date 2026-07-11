@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="gm-dashboard">
     <!-- 顶部：时间筛选器 -->
     <el-card class="filter-card">

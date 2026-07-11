@@ -14,7 +14,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/login", "/api/register", "/api/dining/menu" );
+                .excludePathPatterns("/api/login", "/api/login/failCount", "/api/register", "/api/dining/menu", "/api/captcha" );
     }
 
     @Override
@@ -23,7 +23,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:5173") // 前端地址
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .exposedHeaders("X-Auth-Token");
     }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,5 +37,6 @@ public class Employee {
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",
             message = "密码必须为8~20位字母+数字组合")
+    @ToString.Exclude
     private String password; // 注意：新增时可为空，编辑时可为空（表示不修改）
 }
