@@ -46,6 +46,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
+import { ROLES } from "@/constants/roles";
 import {
   House,
   User,
@@ -64,7 +65,7 @@ const userStore = useUserStore();
 // 根据角色动态生成菜单
 const menus = computed(() => {
   const role = userStore.userInfo.role;
-  if (role === "前台接待员") {
+  if (role === ROLES.RECEPTION) {
     return [
       { path: "/reception/dashboard", title: "首页", icon: House },
       { path: "/reception/checkin", title: "散客预订", icon: User },
@@ -72,7 +73,7 @@ const menus = computed(() => {
       { path: "/reception/roomStatus", title: "房态图", icon: House },
       { path: "/reception/messages", title: "留言管理", icon: Edit },
     ];
-  } else if (role === "营业服务员") {
+  } else if (role === ROLES.WAITER) {
     return [
       { path: "/waiter/dashboard", title: "首页", icon: House },
       { path: "/waiter/menu", title: "菜单点菜", icon: Goods },
@@ -80,7 +81,7 @@ const menus = computed(() => {
       { path: "/waiter/unsettled", title: "历史账单", icon: Ticket },
       { path: "/waiter/stock", title: "库房管理", icon: Edit },
     ];
-  } else if (role === "财务管理员") {
+  } else if (role === ROLES.FINANCE) {
     return [
       { path: "/finance/dashboard", title: "首页", icon: House },
       { path: "/finance/bill", title: "客人账单", icon: Money }, // 新增
@@ -88,7 +89,7 @@ const menus = computed(() => {
       { path: "/finance/attendance", title: "考勤管理", icon: Money },
       { path: "/finance/salary", title: "工资管理", icon: Ticket },
     ];
-  } else if (role === "总经理") {
+  } else if (role === ROLES.GM) {
     return [{ path: "/gm/statistics", title: "统计图表", icon: PieChart }];
   }
   return [];

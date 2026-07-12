@@ -325,7 +325,6 @@ const submitCheckIn = async () => {
     }
   } catch (error) {
     ElMessage.error("提交失败，请稍后重试");
-    console.error(error);
   }
 };
 

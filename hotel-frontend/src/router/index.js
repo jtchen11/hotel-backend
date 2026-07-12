@@ -1,13 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "@/store/user";
+import { ROLES, ROLE_HOME_MAP } from "@/constants/roles";
 
 // 定义各角色的首页路径
-const roleHomeMap = {
-  前台接待员: "/reception",
-  营业服务员: "/waiter",
-  财务管理员: "/finance",
-  总经理: "/gm",
-};
+const roleHomeMap = ROLE_HOME_MAP;
 
 const routes = [
   {
@@ -23,7 +19,7 @@ const routes = [
     path: "/reception",
     name: "Reception",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["前台接待员"] },
+    meta: { roles: [ROLES.RECEPTION] },
     children: [
       { path: "", redirect: "/reception/dashboard" },
       {
@@ -57,7 +53,7 @@ const routes = [
     path: "/waiter",
     name: "Waiter",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["营业服务员"] },
+    meta: { roles: [ROLES.WAITER] },
     children: [
       { path: "", redirect: "/waiter/dashboard" },
       {
@@ -90,7 +86,7 @@ const routes = [
     path: "/finance",
     name: "Finance",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["财务管理员"] },
+    meta: { roles: [ROLES.FINANCE] },
     children: [
       { path: "", redirect: "/finance/dashboard" },
       {
@@ -124,7 +120,7 @@ const routes = [
     path: "/gm",
     name: "Gm",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["总经理"] },
+    meta: { roles: [ROLES.GM] },
     children: [
       { path: "", redirect: "/gm/statistics" },
       {

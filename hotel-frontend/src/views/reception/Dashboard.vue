@@ -219,6 +219,7 @@
 
 <script>
 import request from "@/utils/request";
+import { PAY_METHODS } from "@/constants/payment";
 export default {
   data() {
     return {
@@ -234,7 +235,7 @@ export default {
         name: "",
         roomNumber: "",
         depositAmount: 0,
-        payMethod: "微信",
+        payMethod: PAY_METHODS.WECHAT,
       },
     };
   },
@@ -314,17 +315,17 @@ export default {
     async loadLivingList() {
       try {
         const res = await request.get("/reception/livingWithConsume");
-        console.log("livingList API 完整响应:", res);
-        console.log("livingList 数据数组:", res.data);
+        // removed;
+        // removed;
         if (res.data && res.data.length > 0) {
-          console.log("第一条数据示例:", res.data[0]);
-          console.log("preLeaveDate 字段值:", res.data[0].preLeaveDate);
+          // removed;
+          // removed;
         } else {
-          console.log("livingList 无数据");
+          // removed;
         }
         this.livingList = res.data || [];
       } catch (error) {
-        console.error("加载在住客人列表失败:", error);
+        // removed;
       }
     },
     async loadUnreadMessages() {
@@ -363,7 +364,7 @@ export default {
         name: booking.name,
         roomNumber: booking.roomNumber,
         depositAmount: 500,
-        payMethod: "微信",
+        payMethod: PAY_METHODS.WECHAT,
       };
       this.checkinDialogVisible = true;
     },
