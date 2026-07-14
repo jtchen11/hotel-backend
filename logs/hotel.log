@@ -239,3 +239,41 @@
 2026-07-15 03:28:29.200 [http-nio-8080-exec-4] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈芳], success=[true]
 2026-07-15 03:35:04.863 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-07-15 03:35:04.881 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-07-15 04:54:11.911 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2026-07-15 04:54:11.911 [main] INFO  com.hotel.HotelApplication - Starting HotelApplication using Java 23 on DESKTOP-5R3IGJI with PID 14212 (D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend\target\classes started by 86185 in D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend)
+2026-07-15 04:54:11.911 [main] INFO  com.hotel.HotelApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-15 04:54:13.365 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-07-15 04:54:13.369 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-15 04:54:13.370 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-15 04:54:13.370 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-07-15 04:54:13.437 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-15 04:54:13.437 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1466 ms
+2026-07-15 04:54:14.486 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-15 04:54:14.502 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-07-15 04:54:14.510 [main] INFO  com.hotel.HotelApplication - Started HotelApplication in 2.924 seconds (JVM running for 3.42)
+2026-07-15 04:54:18.943 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-15 04:54:18.943 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-07-15 04:54:18.943 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-07-15 04:54:19.193 [http-nio-8080-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-07-15 04:54:19.510 [http-nio-8080-exec-2] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-07-15 05:02:26.297 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-15 05:02:26.297 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-07-15 05:02:29.036 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2026-07-15 05:02:29.046 [main] INFO  com.hotel.HotelApplication - Starting HotelApplication using Java 23 on DESKTOP-5R3IGJI with PID 36660 (D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend\target\classes started by 86185 in D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend)
+2026-07-15 05:02:29.047 [main] INFO  com.hotel.HotelApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-15 05:02:30.255 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-07-15 05:02:30.261 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-15 05:02:30.261 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-15 05:02:30.261 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-07-15 05:02:30.331 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-15 05:02:30.331 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1215 ms
+2026-07-15 05:02:31.253 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-15 05:02:31.265 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-07-15 05:02:31.273 [main] INFO  com.hotel.HotelApplication - Started HotelApplication in 3.446 seconds (JVM running for 4.271)
+2026-07-15 05:02:46.529 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-15 05:02:46.529 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-07-15 05:02:46.529 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-07-15 05:02:46.879 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-07-15 05:02:47.146 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-07-15 05:03:44.036 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-15 05:03:44.042 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
