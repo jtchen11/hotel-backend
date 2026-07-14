@@ -658,6 +658,7 @@ const loadRecords = async () => {
 // 前端筛选（输入框变化时触发）
 const applyFilters = () => {
   // 下拉选择不需要额外操作，v-model 自动响应
+  console.log("当前筛选 - 部门:", filterDepartment.value);
 };
 
 // ========== 员工搜索 ==========

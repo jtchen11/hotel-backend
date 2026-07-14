@@ -237,3 +237,5 @@
 2026-07-15 03:28:13.992 [http-nio-8080-exec-8] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈思思], success=[false]
 2026-07-15 03:28:23.801 [http-nio-8080-exec-3] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈思思], success=[false]
 2026-07-15 03:28:29.200 [http-nio-8080-exec-4] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈芳], success=[true]
+2026-07-15 03:35:04.863 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-15 03:35:04.881 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

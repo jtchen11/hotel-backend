@@ -103,92 +103,107 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import { ElMessage } from "element-plus";
+<script>
 import request from "@/utils/request";
+export default {
+  data() {
+    return {
+      msgList: [],
+      roomList: [],
+      dialog: false,
+      msg: { roomId: "", content: "", msgType: "普通留言" },
+      filterMsgType: "",
+      filterIsRead: null,
+      selectedGuest: null,
+      guestOptions: [],
+      guestLoading: false,
+    };
+  },
+  mounted() {
+    this.getList();
+    this.getRoomList();
+  },
+  methods: {
+    // 远程搜索客人
+    async searchGuest(query) {
+      if (!query || query.trim() === "") {
+        this.guestOptions = [];
+        return;
+      }
+      this.guestLoading = true;
+      try {
+        const res = await request.get("/reception/message/guest/search", {
+          params: { keyword: query.trim() },
+        });
+        this.guestOptions = res.data || [];
+      } catch (err) {
+        console.error(err);
+        this.$message.error("搜索客人失败");
+      } finally {
+        this.guestLoading = false;
+      }
+    },
 
-const msgList = ref([]);
-const roomList = ref([]);
-const dialog = ref(false);
-const msg = ref({ roomId: "", content: "", msgType: "普通留言" });
-const filterMsgType = ref("");
-const filterIsRead = ref(null);
-const selectedGuest = ref(null);
-const guestOptions = ref([]);
-const guestLoading = ref(false);
+    // 选择客人后，记录 roomId
+    onGuestChange(guest) {
+      if (guest) {
+        this.msg.roomId = guest.roomId;
+      } else {
+        this.msg.roomId = "";
+      }
+    },
 
-const getList = async () => {
-  const params = {};
-  if (filterMsgType.value) params.msgType = filterMsgType.value;
-  if (filterIsRead.value !== null && filterIsRead.value !== "")
-    params.isRead = filterIsRead.value;
-  const res = await request.get("/reception/message/list", { params });
-  msgList.value = res.data;
+    // 新增留言时，增加校验
+    async addMsg() {
+      if (!this.msg.roomId) {
+        this.$message.warning("请选择一位在住客人");
+        return;
+      }
+      if (!this.msg.content.trim()) {
+        this.$message.warning("请输入留言内容");
+        return;
+      }
+      const res = await request.post("/reception/message/add", this.msg);
+      if (res.code !== 200) {
+        this.$message.error(res.msg);
+        return;
+      }
+      this.$message.success("添加成功");
+      this.dialog = false;
+      // 重置表单
+      this.msg = { roomId: "", content: "", msgType: "普通留言" };
+      this.selectedGuest = null;
+      this.guestOptions = [];
+      this.getList();
+    },
+    async getRoomList() {
+      const res = await request.get("/reception/room/statusList");
+      this.roomList = res.data;
+    },
+    async getList() {
+      const params = {};
+      if (this.filterMsgType) params.msgType = this.filterMsgType;
+      if (this.filterIsRead !== null && this.filterIsRead !== "")
+        params.isRead = this.filterIsRead;
+      const res = await request.get("/reception/message/list", { params });
+      this.msgList = res.data;
+    },
+    async read(id) {
+      await request.put(`/reception/message/read/${id}`);
+      this.$message.success("已标记已读");
+      this.getList();
+    },
+    async addMsg() {
+      const res = await request.post("/reception/message/add", this.msg);
+      if (res.code !== 200) {
+        this.$message.error(res.msg);
+        return;
+      }
+      this.$message.success("添加成功");
+      this.dialog = false;
+      this.msg = { roomId: "", content: "", msgType: "普通留言" };
+      this.getList();
+    },
+  },
 };
-
-const getRoomList = async () => {
-  const res = await request.get("/reception/room/statusList");
-  roomList.value = res.data;
-};
-
-const searchGuest = async (query) => {
-  if (!query || query.trim() === "") {
-    guestOptions.value = [];
-    return;
-  }
-  guestLoading.value = true;
-  try {
-    const res = await request.get("/reception/message/guest/search", {
-      params: { keyword: query.trim() },
-    });
-    guestOptions.value = res.data || [];
-  } catch (err) {
-    console.error(err);
-    ElMessage.error("搜索客人失败");
-  } finally {
-    guestLoading.value = false;
-  }
-};
-
-const onGuestChange = (guest) => {
-  if (guest) {
-    msg.value.roomId = guest.roomId;
-  } else {
-    msg.value.roomId = "";
-  }
-};
-
-const addMsg = async () => {
-  if (!msg.value.roomId) {
-    ElMessage.warning("请选择一位在住客人");
-    return;
-  }
-  if (!msg.value.content.trim()) {
-    ElMessage.warning("请输入留言内容");
-    return;
-  }
-  const res = await request.post("/reception/message/add", msg.value);
-  if (res.code !== 200) {
-    ElMessage.error(res.msg);
-    return;
-  }
-  ElMessage.success("添加成功");
-  dialog.value = false;
-  msg.value = { roomId: "", content: "", msgType: "普通留言" };
-  selectedGuest.value = null;
-  guestOptions.value = [];
-  getList();
-};
-
-const read = async (id) => {
-  await request.put(`/reception/message/read/${id}`);
-  ElMessage.success("已标记已读");
-  getList();
-};
-
-onMounted(() => {
-  getList();
-  getRoomList();
-});
 </script>

@@ -207,7 +207,6 @@ import { ElMessage } from "element-plus";
 import { QuestionFilled } from "@element-plus/icons-vue";
 import * as echarts from "echarts";
 import request from "@/utils/request";
-import { PAY_METHODS, PAY_METHOD_OPTIONS } from "@/constants/payment";
 import { Edit } from "@element-plus/icons-vue";
 
 const warningLoading = ref(false);
@@ -274,7 +273,7 @@ const depositDialogVisible = ref(false);
 const depositForm = ref({
   guestId: null,
   amount: 0,
-  payMethod: PAY_METHODS.WECHAT,
+  payMethod: "微信",
   remark: "",
 });
 const chartRef = ref(null);
@@ -365,7 +364,7 @@ const initChart = () => {
 const addDepositQuick = (guestId) => {
   depositForm.value.guestId = guestId;
   depositForm.value.amount = 0;
-  depositForm.value.payMethod = PAY_METHODS.WECHAT;
+  depositForm.value.payMethod = "微信";
   depositForm.value.remark = "";
   depositDialogVisible.value = true;
 };

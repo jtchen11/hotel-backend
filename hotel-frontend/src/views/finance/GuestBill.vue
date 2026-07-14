@@ -411,7 +411,6 @@ import { ref, reactive, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "@/utils/request";
-import { PAY_METHODS } from "@/constants/payment";
 import PrintBill from "@/components/PrintBill.vue";
 // 折叠面板展开的订单索引（默认全部折叠）
 const activeFoodOrders = ref([]);
@@ -424,11 +423,11 @@ const billData = ref(null);
 const discountRate = ref(1.0);
 const depositDialogVisible = ref(false);
 const depositType = ref("追加");
-const depositForm = ref({ amount: 0, payMethod: PAY_METHODS.WECHAT, remark: "" });
+const depositForm = ref({ amount: 0, payMethod: "微信", remark: "" });
 const printRef = ref(null);
 const orderDetails = ref([]);
 const orderDetailsDialogVisible = ref(false);
-const payMethod = ref(PAY_METHODS.CASH);
+const payMethod = ref("现金");
 const estimatedTotal = computed(() => {
   if (!billData.value) return 0;
   const checkIn = new Date(billData.value.checkInDate);
