@@ -1,13 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "@/store/user";
+import { ROLES, ROLE_HOME_MAP } from "@/constants/roles";
 
 // 定义各角色的首页路径
-const roleHomeMap = {
-  前台接待员: "/reception",
-  营业服务员: "/waiter",
-  财务管理员: "/finance",
-  总经理: "/gm",
-};
+const roleHomeMap = ROLE_HOME_MAP;
 
 const routes = [
   {
@@ -23,9 +19,9 @@ const routes = [
     path: "/reception",
     name: "Reception",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["前台接待员"] },
+    meta: { roles: [ROLES.RECEPTION] },
     children: [
-      { path: "", redirect: "/reception/dashboard" },
+      { path: "", redirect: "/reception/dashboard", name: "ReceptionIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/reception/Dashboard.vue"),
@@ -34,7 +30,7 @@ const routes = [
       {
         path: "checkin",
         component: () => import("@/views/reception/Checkin.vue"),
-        meta: { title: "散客预订" },
+        meta: { title: "入住办理" },
       },
       {
         path: "groupCheckin",
@@ -47,6 +43,11 @@ const routes = [
         meta: { title: "房态图" },
       },
       {
+        path: "booking",
+        component: () => import("@/views/reception/Booking.vue"),
+        meta: { title: "创建预订" },
+      },
+      {
         path: "messages",
         component: () => import("@/views/reception/Messages.vue"),
         meta: { title: "留言管理" },
@@ -57,9 +58,9 @@ const routes = [
     path: "/waiter",
     name: "Waiter",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["营业服务员"] },
+    meta: { roles: [ROLES.WAITER] },
     children: [
-      { path: "", redirect: "/waiter/dashboard" },
+      { path: "", redirect: "/waiter/dashboard", name: "WaiterIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/waiter/Dashboard.vue"),
@@ -90,9 +91,9 @@ const routes = [
     path: "/finance",
     name: "Finance",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["财务管理员"] },
+    meta: { roles: [ROLES.FINANCE] },
     children: [
-      { path: "", redirect: "/finance/dashboard" },
+      { path: "", redirect: "/finance/dashboard", name: "FinanceIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/finance/Dashboard.vue"),
@@ -124,9 +125,9 @@ const routes = [
     path: "/gm",
     name: "Gm",
     component: () => import("@/components/Layout.vue"),
-    meta: { roles: ["总经理"] },
+    meta: { roles: [ROLES.GM] },
     children: [
-      { path: "", redirect: "/gm/statistics" },
+      { path: "", redirect: "/gm/statistics", name: "GmIndex" },
       {
         path: "statistics",
         component: () => import("@/views/gm/Statistics.vue"),
@@ -146,7 +147,9 @@ const router = createRouter({
 // decode JWT payload to check expiration
 function isTokenExpired(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    // JWT uses base64url, convert to base64 first
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
     return payload.exp * 1000 < Date.now();
   } catch {
     return true;
