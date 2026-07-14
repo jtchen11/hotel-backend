@@ -21,7 +21,7 @@ const routes = [
     component: () => import("@/components/Layout.vue"),
     meta: { roles: [ROLES.RECEPTION] },
     children: [
-      { path: "", redirect: "/reception/dashboard" },
+      { path: "", redirect: "/reception/dashboard", name: "ReceptionIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/reception/Dashboard.vue"),
@@ -30,7 +30,7 @@ const routes = [
       {
         path: "checkin",
         component: () => import("@/views/reception/Checkin.vue"),
-        meta: { title: "散客预订" },
+        meta: { title: "入住办理" },
       },
       {
         path: "groupCheckin",
@@ -41,6 +41,11 @@ const routes = [
         path: "roomStatus",
         component: () => import("@/views/reception/RoomStatus.vue"),
         meta: { title: "房态图" },
+      },
+      {
+        path: "booking",
+        component: () => import("@/views/reception/Booking.vue"),
+        meta: { title: "创建预订" },
       },
       {
         path: "messages",
@@ -55,7 +60,7 @@ const routes = [
     component: () => import("@/components/Layout.vue"),
     meta: { roles: [ROLES.WAITER] },
     children: [
-      { path: "", redirect: "/waiter/dashboard" },
+      { path: "", redirect: "/waiter/dashboard", name: "WaiterIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/waiter/Dashboard.vue"),
@@ -88,7 +93,7 @@ const routes = [
     component: () => import("@/components/Layout.vue"),
     meta: { roles: [ROLES.FINANCE] },
     children: [
-      { path: "", redirect: "/finance/dashboard" },
+      { path: "", redirect: "/finance/dashboard", name: "FinanceIndex" },
       {
         path: "dashboard",
         component: () => import("@/views/finance/Dashboard.vue"),
@@ -122,7 +127,7 @@ const routes = [
     component: () => import("@/components/Layout.vue"),
     meta: { roles: [ROLES.GM] },
     children: [
-      { path: "", redirect: "/gm/statistics" },
+      { path: "", redirect: "/gm/statistics", name: "GmIndex" },
       {
         path: "statistics",
         component: () => import("@/views/gm/Statistics.vue"),
@@ -142,7 +147,9 @@ const router = createRouter({
 // decode JWT payload to check expiration
 function isTokenExpired(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    // JWT uses base64url, convert to base64 first
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
     return payload.exp * 1000 < Date.now();
   } catch {
     return true;

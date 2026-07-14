@@ -48,7 +48,8 @@ public class AutoCancelBookingTask {
             return;
         }
         for (Guest guest : expired) {
-            guestMapper.deleteById(guest.getGuestId());
+            guest.setStatus("已取消");
+            guestMapper.updateById(guest);
             log.info("自动取消未入住订单：guestId={}, roomId={}, checkIn={}, preLeave={}",
                     guest.getGuestId(), guest.getRoomId(),
                     guest.getCheckInDate(), guest.getPreLeaveDate());

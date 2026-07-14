@@ -17,8 +17,8 @@
         </div>
         <div class="room-info">
           <div class="room-number">{{ room.roomNumber }}</div>
-          <div class="room-type">{{ room.roomType }}</div>
-          <div :class="getStatusClass(room.status)">{{ room.status }}</div>
+          <div class="room-type">{{ room.roomType }}{{ room.description ? ' · ' + room.description : '' }}</div>
+          <div :class="getStatusClass(room.status)">{{ getDisplayStatus(room) }}</div>
           <div v-if="room.guestName" class="guest-name">
             客人：{{ room.guestName }}
           </div>
@@ -145,165 +145,184 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from "vue";
+import { ElMessage } from "element-plus";
 import request from "@/utils/request";
-export default {
-  data() {
-    return {
-      rooms: [],
-      statusDialogVisible: false,
-      changeDialogVisible: false,
-      currentRoom: {},
-      newStatus: "",
-      targetRoomId: null,
-      freeRooms: [],
-      detailDialogVisible: false,
-      roomDetail: null,
-      damageItem: "",
-      damageAmount: 0,
-      currentRoomForDetail: null,
-    };
-  },
-  mounted() {
-    this.getRooms();
-  },
-  methods: {
-    async getRooms() {
-      const res = await request.get("/reception/room/statusList");
-      this.rooms = res.data;
-    },
-    getImageUrl(roomNumber) {
-      return `http://localhost:8080/uploads/rooms/${roomNumber}.jpg`;
-    },
-    handleImageError(e) {
-      e.target.src = "https://via.placeholder.com/200x150?text=No+Image";
-    },
-    getStatusClass(status) {
-      return {
-        "status-free": status === "空闲",
-        "status-used": status === "占用",
-        "status-repair": status === "维修中",
-        "status-clean": status === "打扫中",
-      };
-    },
-    openStatusDialog(room) {
-      this.currentRoom = { ...room };
-      this.newStatus = room.status;
-      this.statusDialogVisible = true;
-    },
-    async saveStatus() {
-      if (this.currentRoom.status === "占用") {
-        this.$message.warning("房间正在使用中，不能修改状态");
-        return;
-      }
-      await request.put(
-        `/reception/room/updateStatus?roomId=${this.currentRoom.roomId}&status=${this.newStatus}`,
-      );
-      this.$message.success("状态修改成功");
-      this.statusDialogVisible = false;
-      this.getRooms();
-    },
-    async openChangeRoomDialog(room) {
-      // 加载所有空闲房间
-      const res = await request.get("/reception/room/statusList");
-      this.freeRooms = res.data.filter((r) => r.status === "空闲");
-      if (this.freeRooms.length === 0) {
-        this.$message.warning("当前没有空闲房间可供换房");
-        return;
-      }
-      this.currentRoom = { ...room };
-      this.targetRoomId = null;
-      this.changeDialogVisible = true;
-    },
-    async confirmChange() {
-      if (!this.targetRoomId) {
-        this.$message.warning("请选择目标房间");
-        return;
-      }
-      // 需要当前房间的 guestId（房态图数据中必须包含 guestId）
-      if (!this.currentRoom.guestId) {
-        this.$message.error("无法获取客人信息，请刷新页面重试");
-        return;
-      }
-      await request.post("/reception/changeRoom", null, {
-        params: {
-          guestId: this.currentRoom.guestId,
-          newRoomId: this.targetRoomId,
-        },
-      });
-      this.$message.success("换房成功");
-      this.changeDialogVisible = false;
-      this.getRooms();
-    },
-    async showRoomDetail(room) {
-      this.currentRoomForDetail = room;
-      let currentGuest = null;
-      if (room.status === "占用" && room.guestId) {
-        const res = await request.get(`/guest/detail/${room.guestId}`);
-        currentGuest = res.data;
-      }
-      // 获取未来预订
-      const bookingsRes = await request.get(
-        `/reception/room/bookings/${room.roomId}`,
-      );
-      this.roomDetail = {
-        currentGuest: currentGuest,
-        bookings: bookingsRes.data || [],
-      };
-      this.detailDialogVisible = true;
-    },
-    async registerDamage() {
-      if (!this.damageItem || this.damageAmount <= 0) {
-        this.$message.warning("请填写损坏物品名称和有效的赔偿金额");
-        return;
-      }
-      // 获取当前房间的 roomId（已存储在 roomDetail 中，需要传入）
-      const roomId = this.currentRoomForDetail?.roomId; // 需要你在打开详情时保存 currentRoom
-      if (!roomId) {
-        this.$message.error("房间信息丢失，请重新打开");
-        return;
-      }
-      try {
-        await request.post("/reception/damage", {
-          roomId: roomId,
-          itemName: this.damageItem,
-          amount: this.damageAmount,
-        });
-        this.$message.success("损坏登记成功");
-        this.damageItem = "";
-        this.damageAmount = 0;
-        // 刷新房态图和当前客人消费（可选）
-        this.getRooms();
-      } catch (err) {
-        this.$message.error(err.response?.data?.msg || "登记失败");
-      }
-    },
-    formatDate(dateValue) {
-      if (!dateValue) return "";
-      let date;
-      if (typeof dateValue === "string") {
-        // 如果是 '2026-06-18T00:00:00'，直接 new Date 即可
-        date = new Date(dateValue);
-      } else if (dateValue instanceof Date) {
-        date = dateValue;
-      } else {
-        // 可能是 LocalDate 对象（包含 year, month, day 属性）
-        if (dateValue.year && dateValue.month && dateValue.day) {
-          const year = dateValue.year;
-          const month = String(dateValue.month).padStart(2, "0");
-          const day = String(dateValue.day).padStart(2, "0");
-          return `${year}-${month}-${day}`;
-        }
-        return dateValue; // 兜底
-      }
-      if (isNaN(date.getTime())) return dateValue;
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    },
-  },
+
+const rooms = ref([]);
+const statusDialogVisible = ref(false);
+const changeDialogVisible = ref(false);
+const currentRoom = ref({});
+const newStatus = ref("");
+const targetRoomId = ref(null);
+const freeRooms = ref([]);
+const detailDialogVisible = ref(false);
+const roomDetail = ref(null);
+const damageItem = ref("");
+const damageAmount = ref(0);
+const currentRoomForDetail = ref(null);
+
+const getRooms = async () => {
+  const today = new Date().toISOString().slice(0, 10);
+  const [statusRes, dateRes] = await Promise.all([
+    request.get("/reception/room/statusList"),
+    request.get("/reception/room/dateList", { params: { inDate: today, outDate: today } })
+  ]);
+  const statusMap = {};
+  (statusRes.data || []).forEach(r => { statusMap[r.roomId] = r; });
+  (dateRes.data || []).forEach(r => {
+    if (statusMap[r.roomId]) {
+      statusMap[r.roomId].isBusy = r.isBusy;
+    }
+  });
+  rooms.value = Object.values(statusMap);
 };
+
+const getImageUrl = (roomNumber) => {
+  return `http://localhost:8080/uploads/rooms/${roomNumber}.jpg`;
+};
+
+const handleImageError = (e) => {
+  e.target.src = "https://via.placeholder.com/200x150?text=No+Image";
+};
+
+const getStatusClass = (status) => {
+  if (status === "维修中") return "status-repair";
+  if (status === "打扫中") return "status-clean";
+  if (status === "占用") return "status-used";
+  return "";
+};
+
+const getDisplayStatus = (room) => {
+  if (room.status === "维修中") return "维修中";
+  if (room.status === "打扫中") return "打扫中";
+  if (room.status === "占用") return "占用";
+  if (room.isBusy) return "已锁";
+  return "空闲";
+};
+
+const openStatusDialog = (room) => {
+  currentRoom.value = { ...room };
+  newStatus.value = room.status;
+  statusDialogVisible.value = true;
+};
+
+const saveStatus = async () => {
+  if (currentRoom.value.status === "占用") {
+    ElMessage.warning("房间正在使用中，不能修改状态");
+    return;
+  }
+  const res = await request.put(
+    `/reception/room/updateStatus?roomId=${currentRoom.value.roomId}&status=${newStatus.value}`,
+  );
+  ElMessage.success(res.msg || "状态修改成功");
+  statusDialogVisible.value = false;
+  getRooms();
+};
+
+const openChangeRoomDialog = async (room) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+  const res = await request.get("/reception/room/dateList", { params: { inDate: today, outDate: tomorrow } });
+  freeRooms.value = (res.data || []).filter((r) => !r.isBusy && r.status !== "维修中" && r.status !== "占用" && r.roomId !== currentRoom.value?.roomId);
+  if (freeRooms.value.length === 0) {
+    ElMessage.warning("当前没有可用房间可供换房");
+    return;
+  }
+  currentRoom.value = { ...room };
+  targetRoomId.value = null;
+  changeDialogVisible.value = true;
+};
+
+const confirmChange = async () => {
+  if (!targetRoomId.value) {
+    ElMessage.warning("请选择目标房间");
+    return;
+  }
+  if (!currentRoom.value.guestId) {
+    ElMessage.error("无法获取客人信息，请刷新页面重试");
+    return;
+  }
+  await request.post("/reception/changeRoom", null, {
+    params: {
+      guestId: currentRoom.value.guestId,
+      newRoomId: targetRoomId.value,
+    },
+  });
+  ElMessage.success("换房成功");
+  changeDialogVisible.value = false;
+  getRooms();
+};
+
+const showRoomDetail = async (room) => {
+  currentRoomForDetail.value = room;
+  let currentGuest = null;
+  if (room.status === "占用" && room.guestId) {
+    const res = await request.get(`/guest/detail/${room.guestId}`);
+    currentGuest = res.data;
+  }
+  const bookingsRes = await request.get(
+    `/reception/room/bookings/${room.roomId}`,
+  );
+  roomDetail.value = {
+    currentGuest: currentGuest,
+    bookings: bookingsRes.data || [],
+  };
+  detailDialogVisible.value = true;
+};
+
+const registerDamage = async () => {
+  if (!damageItem.value || damageAmount.value <= 0) {
+    ElMessage.warning("请填写损坏物品名称和有效的赔偿金额");
+    return;
+  }
+  const roomId = currentRoomForDetail.value?.roomId;
+  if (!roomId) {
+    ElMessage.error("房间信息丢失，请重新打开");
+    return;
+  }
+  try {
+    await request.post("/reception/damage", {
+      roomId: roomId,
+      itemName: damageItem.value,
+      amount: damageAmount.value,
+    });
+    ElMessage.success("损坏登记成功");
+    damageItem.value = "";
+    damageAmount.value = 0;
+    getRooms();
+  } catch (err) {
+    ElMessage.error(err.response?.data?.msg || "登记失败");
+  }
+};
+
+const formatDate = (dateValue) => {
+  if (!dateValue) return "";
+  let date;
+  if (typeof dateValue === "string") {
+    date = new Date(dateValue);
+  } else if (dateValue instanceof Date) {
+    date = dateValue;
+  } else {
+    if (dateValue.year && dateValue.month && dateValue.day) {
+      const year = dateValue.year;
+      const month = String(dateValue.month).padStart(2, "0");
+      const day = String(dateValue.day).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    return dateValue;
+  }
+  if (isNaN(date.getTime())) return dateValue;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+onMounted(() => {
+  getRooms();
+});
 </script>
 
 <style scoped>
@@ -377,5 +396,8 @@ export default {
 }
 .status-clean {
   color: #409eff;
+}
+.status-locked {
+  color: #b0b0b0;
 }
 </style>

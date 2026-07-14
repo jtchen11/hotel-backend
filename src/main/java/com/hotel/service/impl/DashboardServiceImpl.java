@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
@@ -48,14 +51,23 @@ public class DashboardServiceImpl implements DashboardService {
         if (ktvOrderCount == null) ktvOrderCount = 0;
         int todayOrderCount = foodOrderCount + ktvOrderCount;
 
-        // 待结账订单数：仅统计 KTV 使用中房间数
-        int unsettledCount = ktvUsing;
+        List<Map<String, Object>> unsettledFoodList = orderDetailMapper.selectTodayUnsettledFoodOrders();
+        Set<Integer> unsettledGuestIds = new HashSet<>();
+        for (Map<String, Object> item : unsettledFoodList) {
+            Object gid = item.get("guest_id");
+            if (gid != null) {
+                unsettledGuestIds.add(((Number) gid).intValue());
+            }
+        }
+        int foodUnsettledGuestCount = unsettledGuestIds.size();
+        int unsettledCount = ktvUsing + foodUnsettledGuestCount;
 
         res.put("totalKtv", totalKtv);
         res.put("ktvUsing", ktvUsing);
         res.put("todayOrderCount", todayOrderCount);
         res.put("todayRevenue", todayRevenue);
         res.put("unsettledCount", unsettledCount);
+        res.put("unsettledFoodOrders", unsettledFoodList.size() > 10 ? unsettledFoodList.subList(0, 10) : unsettledFoodList);
 
         return res;
     }

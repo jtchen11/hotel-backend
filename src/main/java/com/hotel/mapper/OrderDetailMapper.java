@@ -21,4 +21,11 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
     List<Map<String, Object>> selectUnsettledGroupByType(Integer guestId);
     @Select("SELECT * FROM order_detail WHERE guest_id = #{guestId} AND is_settled = 0")
     List<OrderDetail> selectAllUnsettled(Integer guestId);
+
+    @Select("SELECT od.*, g.name as guest_name, r.room_number FROM order_detail od " +
+            "LEFT JOIN guest g ON od.guest_id = g.guest_id " +
+            "LEFT JOIN room r ON g.room_id = r.room_id " +
+            "WHERE od.is_settled = 0 AND od.item_type != 'KTV' " +
+            "AND DATE(od.create_time) = CURDATE() ORDER BY od.create_time DESC")
+    List<Map<String, Object>> selectTodayUnsettledFoodOrders();
 }

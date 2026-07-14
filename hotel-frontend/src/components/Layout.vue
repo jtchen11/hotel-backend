@@ -1,13 +1,13 @@
-<template>
+﻿<template>
   <el-container style="height: 100vh">
-    <el-aside width="220px" style="background-color: #304156">
-      <div class="logo">饭店管理系统</div>
+    <el-aside width="220px">
+      <div class="logo">CPLee Hotel</div>
       <el-menu
         :default-active="$route.path"
         class="el-menu-vertical"
-        background-color="#304156"
+        background-color="#1a1a2e"
         text-color="#bfcbd9"
-        active-text-color="#409EFF"
+        active-text-color="#c8a27a"
         router
       >
         <el-menu-item v-for="item in menus" :key="item.path" :index="item.path">
@@ -17,23 +17,12 @@
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header
-        style="
-          background-color: #fff;
-          border-bottom: 1px solid #e6e6e6;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-      >
-        <span
-          >欢迎，{{ userStore.userInfo.empName }} ({{
-            userStore.userInfo.role
-          }})</span
-        >
-        <el-button type="danger" size="small" @click="logout"
-          >退出登录</el-button
-        >
+      <el-header>
+        <div class="header-left">
+          <span class="header-greeting">欢迎，{{ userStore.userInfo.empName }}</span>
+          <el-tag size="small" effect="plain" style="margin-left:8px">{{ userStore.userInfo.role }}</el-tag>
+        </div>
+        <el-button class="logout-btn" size="small" @click="logout">退出登录</el-button>
       </el-header>
       <el-main>
         <router-view />
@@ -68,8 +57,8 @@ const menus = computed(() => {
   if (role === ROLES.RECEPTION) {
     return [
       { path: "/reception/dashboard", title: "首页", icon: House },
-      { path: "/reception/checkin", title: "散客预订", icon: User },
-      { path: "/reception/groupCheckin", title: "团体预订", icon: User },
+      { path: "/reception/booking", title: "创建预订", icon: Edit },
+      { path: "/reception/checkin", title: "入住办理", icon: User },
       { path: "/reception/roomStatus", title: "房态图", icon: House },
       { path: "/reception/messages", title: "留言管理", icon: Edit },
     ];
@@ -103,19 +92,21 @@ const logout = () => {
 
 <style scoped>
 .logo {
-  height: 60px;
-  line-height: 60px;
+  height: 64px;
+  line-height: 64px;
   text-align: center;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  background-color: #263445;
+  color: #c8a27a;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  background-color: #151528;
+  border-bottom: 1px solid rgba(200,162,122,0.15);
 }
 .el-menu-vertical:not(.el-menu--collapse) {
   width: 220px;
 }
 .el-aside {
-  background-color: #304156;
+  background-color: #1a1a2e;
 }
 .el-header {
   background-color: #ffffff;
@@ -124,9 +115,31 @@ const logout = () => {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
+  height: 56px;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+}
+.header-greeting {
+  font-size: 14px;
+  color: #333;
+}
+.logout-btn {
+  color: #999;
+  border-color: #ddd;
+}
+.logout-btn:hover {
+  color: #c8a27a;
+  border-color: #c8a27a;
 }
 .el-main {
-  background-color: #f5f7fa;
+  background-color: #f5f5f5;
   padding: 24px;
+}
+/* 菜单激活项金色 */
+.el-menu-item.is-active {
+  background-color: rgba(200,162,122,0.1) !important;
+  border-right: 3px solid #c8a27a;
 }
 </style>
