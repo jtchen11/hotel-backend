@@ -237,3 +237,46 @@
 2026-07-15 03:28:13.992 [http-nio-8080-exec-8] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈思思], success=[false]
 2026-07-15 03:28:23.801 [http-nio-8080-exec-3] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈思思], success=[false]
 2026-07-15 03:28:29.200 [http-nio-8080-exec-4] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈芳], success=[true]
+2026-07-15 16:39:05.600 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2026-07-15 16:39:05.608 [main] INFO  com.hotel.HotelApplication - Starting HotelApplication using Java 23 on DESKTOP-5R3IGJI with PID 35472 (D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend\target\classes started by 86185 in D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend)
+2026-07-15 16:39:05.608 [main] INFO  com.hotel.HotelApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-15 16:39:06.421 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-07-15 16:39:06.426 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-15 16:39:06.426 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-15 16:39:06.426 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-07-15 16:39:06.495 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-15 16:39:06.495 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 843 ms
+2026-07-15 16:39:07.409 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-15 16:39:07.425 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-07-15 16:39:07.434 [main] INFO  com.hotel.HotelApplication - Started HotelApplication in 2.149 seconds (JVM running for 2.804)
+2026-07-15 16:39:35.326 [http-nio-8080-exec-3] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-15 16:39:35.326 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-07-15 16:39:35.326 [http-nio-8080-exec-3] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+2026-07-15 16:39:35.616 [http-nio-8080-exec-3] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-07-15 16:39:35.796 [http-nio-8080-exec-3] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-07-15 16:39:55.542 [http-nio-8080-exec-3] WARN  c.b.m.c.t.support.ReflectLambdaMeta - Unable to make field private final java.lang.Class java.lang.invoke.SerializedLambda.capturingClass accessible: module java.base does not "opens java.lang.invoke" to unnamed module @74235045
+2026-07-15 16:39:55.658 [http-nio-8080-exec-3] INFO  com.hotel.controller.LoginController - Login attempt: username=[陈芳], success=[true]
+2026-07-15 16:40:10.746 [http-nio-8080-exec-1] INFO  com.hotel.controller.LoginController - Login attempt: username=[李强], success=[true]
+2026-07-15 17:45:47.597 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-15 17:45:47.613 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-07-15 17:46:08.344 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2026-07-15 17:46:08.352 [main] INFO  com.hotel.HotelApplication - Starting HotelApplication using Java 23 on DESKTOP-5R3IGJI with PID 26280 (D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend\target\classes started by 86185 in D:\demo\Junior year files\The second semester\models\final\代码\hotel-backend)
+2026-07-15 17:46:08.353 [main] INFO  com.hotel.HotelApplication - No active profile set, falling back to 1 default profile: "default"
+2026-07-15 17:46:10.756 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-07-15 17:46:10.763 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-15 17:46:10.764 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-07-15 17:46:10.764 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+2026-07-15 17:46:10.841 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-07-15 17:46:10.841 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2443 ms
+2026-07-15 17:46:11.800 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-15 17:46:11.819 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-07-15 17:46:11.829 [main] INFO  com.hotel.HotelApplication - Started HotelApplication in 3.836 seconds (JVM running for 4.471)
+2026-07-15 17:46:12.190 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-15 17:46:12.190 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-07-15 17:46:12.191 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-07-15 17:46:12.495 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-07-15 17:46:12.776 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-07-15 17:46:19.227 [http-nio-8080-exec-6] WARN  c.b.m.c.t.support.ReflectLambdaMeta - Unable to make field private final java.lang.Class java.lang.invoke.SerializedLambda.capturingClass accessible: module java.base does not "opens java.lang.invoke" to unnamed module @74235045
+2026-07-15 17:46:19.394 [http-nio-8080-exec-6] INFO  com.hotel.controller.LoginController - Login attempt: username=[张丽华], success=[true]
+2026-07-15 21:18:19.614 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-07-15 21:18:19.614 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
