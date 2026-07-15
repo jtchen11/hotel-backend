@@ -45,7 +45,6 @@ public class ReceptionController {
     private OrderExtensionLogMapper orderExtensionLogMapper;
 
     // ========== 散客入住 ==========
-    // ========== 散客入住 ==========
     @Operation(summary = "散客入住登记")
     @PostMapping("/checkin")
     @Transactional(rollbackFor = Exception.class)
@@ -69,6 +68,18 @@ public class ReceptionController {
         String phone = (String) params.get("phone");
         if (name == null || name.isEmpty()) return Result.error("客人姓名不能为空");
         if (idCard == null || idCard.isEmpty()) return Result.error("身份证号不能为空");
+
+        // ====== 新增：身份证重复在住校验（位置1） ======
+        if (idCard != null && !idCard.isEmpty()) {
+            QueryWrapper<Guest> dupQw = new QueryWrapper<>();
+            dupQw.eq("id_card", idCard).eq("status", "在住");
+            if (guestId != null) {
+                dupQw.ne("guest_id", guestId);
+            }
+            if (guestMapper.selectCount(dupQw) > 0) {
+                return Result.error("该身份证已有在住记录，不能重复办理入住");
+            }
+        }
 
         // 日期处理：允许为空，使用默认值
         String outDateStr = (String) params.get("outDate");
@@ -128,11 +139,11 @@ public class ReceptionController {
             guest.setName(name);
             guest.setIdCard(idCard);
             guest.setPhone(phone);
-              guest.setGender((String) params.getOrDefault("gender", null));
-              guest.setNativePlace((String) params.getOrDefault("nativePlace", null));
-              guest.setCompany((String) params.getOrDefault("company", null));
-              guest.setOccupation((String) params.getOrDefault("occupation", null));
-              guest.setReason((String) params.getOrDefault("reason", null));
+            guest.setGender((String) params.getOrDefault("gender", null));
+            guest.setNativePlace((String) params.getOrDefault("nativePlace", null));
+            guest.setCompany((String) params.getOrDefault("company", null));
+            guest.setOccupation((String) params.getOrDefault("occupation", null));
+            guest.setReason((String) params.getOrDefault("reason", null));
         } else {
             // 散客入住（walk-in）
             guest = new Guest();
@@ -182,6 +193,7 @@ public class ReceptionController {
 
         return Result.success("入住成功");
     }
+
     @PostMapping("/groupcheckin")
     @Transactional(rollbackFor = Exception.class)
     public Result<?> groupCheckIn(@RequestBody Map<String, Object> params) {
@@ -229,7 +241,7 @@ public class ReceptionController {
             QueryWrapper<Guest> qw = new QueryWrapper<>();
             qw.eq("room_id", roomId)
                     .in("status", Arrays.asList("在住", "已预订", "已锁"))
-                .lt("check_in_date", preLeave.atStartOfDay())
+                    .lt("check_in_date", preLeave.atStartOfDay())
                     .gt("pre_leave_date", checkInTime.toLocalDate());
             if (guestMapper.selectCount(qw) > 0) {
                 return Result.error("房间 " + room.getRoomNumber() + " 在所选时间段已被占用");
@@ -290,6 +302,16 @@ public class ReceptionController {
         String outDateStr = (String) params.get("outDate");
         if (name == null || name.isEmpty()) return Result.error("客人姓名不能为空");
         if (idCard == null || idCard.isEmpty()) return Result.error("身份证号不能为空");
+
+        // ====== 新增：身份证重复在住校验（位置3） ======
+        if (idCard != null && !idCard.isEmpty()) {
+            QueryWrapper<Guest> dupQw = new QueryWrapper<>();
+            dupQw.eq("id_card", idCard).eq("status", "在住").ne("guest_id", guestId);
+            if (guestMapper.selectCount(dupQw) > 0) {
+                return Result.error("该身份证已有在住记录，不能重复办理入住");
+            }
+        }
+
         if (outDateStr == null || outDateStr.isEmpty()) {
             outDateStr = LocalDate.now().plusDays(1).toString();
         }
@@ -506,7 +528,9 @@ public class ReceptionController {
             int available = 0;
             for (Room r : rooms) {
                 if (!"维修中".equals(r.getStatus()) && !busyRoomIds.contains(r.getRoomId())) {
-                    available++;
+                    if (!"占用".equals(r.getStatus()) || d1.toLocalDate().isAfter(LocalDate.now())) {
+                        available++;
+                    }
                 }
             }
             Map<String, Object> item = new HashMap<>();
@@ -601,6 +625,7 @@ public class ReceptionController {
         }
         return Result.success(result);
     }
+
     @Operation(summary = "退房操作")
     @PostMapping("/checkout")
     public Result<?> checkout(@RequestParam Integer roomId) {
@@ -634,6 +659,7 @@ public class ReceptionController {
         qw.eq("is_read", 0);
         return Result.success(messageMapper.selectCount(qw).intValue());
     }
+
     @Operation(summary = "获取在住客人及消费信息")
     @GetMapping("/livingWithConsume")
     public Result<List<Map<String, Object>>> livingWithConsume() {
@@ -661,18 +687,20 @@ public class ReceptionController {
             map.put("roomNumber", room.getRoomNumber());
             map.put("checkInDate", guest.getCheckInDate());
             map.put("preLeaveDate", guest.getPreLeaveDate());
-            
+
             map.put("consume", consume);
             result.add(map);
         }
         return Result.success(result);
     }
+
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+
     @Operation(summary = "获取待办理入住列表")
     @GetMapping("/pendingBookings")
     public Result<List<Map<String, Object>>> pendingBookings(@RequestParam(required = false) String keyword,
-                                                                     @RequestParam(required = false) String guestType) {
+                                                             @RequestParam(required = false) String guestType) {
         QueryWrapper<Guest> qw = new QueryWrapper<>();
         qw.eq("status", "已预订")
                 .apply("DATE(pre_leave_date) >= DATE(NOW())")
@@ -708,6 +736,7 @@ public class ReceptionController {
         }
         return Result.success(result);
     }
+
     @Operation(summary = "预订客人办理入住")
     @PostMapping("/checkinFromBooking")
     @Transactional
@@ -718,6 +747,16 @@ public class ReceptionController {
         Guest guest = guestMapper.selectById(guestId);
         if (guest == null) return Result.error("预订记录不存在");
         if (!"已预订".equals(guest.getStatus())) return Result.error("该客人不是预订状态");
+
+        // ====== 新增：身份证重复在住校验（位置2） ======
+        String checkIdCard = guest.getIdCard();
+        if (checkIdCard != null && !checkIdCard.isEmpty()) {
+            QueryWrapper<Guest> dupQw = new QueryWrapper<>();
+            dupQw.eq("id_card", checkIdCard).eq("status", "在住").ne("guest_id", guest.getGuestId());
+            if (guestMapper.selectCount(dupQw) > 0) {
+                return Result.error("该身份证已有在住记录，不能重复办理入住");
+            }
+        }
 
         LocalDate today = LocalDate.now();
         LocalDate checkInDate = guest.getCheckInDate().toLocalDate();
@@ -767,6 +806,7 @@ public class ReceptionController {
 
         return Result.success("入住成功");
     }
+
     @Autowired
     @Operation(summary = "团队批量预订（创建集团组 + 批量锁房）")
     @PostMapping("/teamBooking")
@@ -810,9 +850,9 @@ public class ReceptionController {
             for (Room r : candidates) {
                 QueryWrapper<Guest> gqw = new QueryWrapper<>();
                 gqw.eq("room_id", r.getRoomId())
-                    .in("status", Arrays.asList("在住", "已预订", "已锁"))
-                    .lt("check_in_date", outDate.atStartOfDay())
-                    .gt("pre_leave_date", inDate);
+                        .in("status", Arrays.asList("在住", "已预订", "已锁"))
+                        .lt("check_in_date", outDate.atStartOfDay())
+                        .gt("pre_leave_date", inDate);
                 if (guestMapper.selectCount(gqw) == 0) { assigned = r; break; }
             }
             if (assigned == null) {
@@ -899,6 +939,7 @@ public class ReceptionController {
         }
         return Result.success(result);
     }
+
     @Operation(summary = "取消预订")
     @PostMapping("/cancelBooking")
     @Transactional
@@ -912,6 +953,7 @@ public class ReceptionController {
         // 房间可用性由 guest 表动态计算，无需释放 room.status
         return Result.success("取消成功");
     }
+
     /**
      * 登记物品损坏
      * @param params { roomId, itemName, amount }
@@ -1029,7 +1071,7 @@ public class ReceptionController {
         List<Room> allRooms = roomMapper.selectList(rqw);
         List<Room> available = new ArrayList<>();
         for (Room room : allRooms) {
-        // 跳过物理状态为"占用"或"维修中"的房间
+            // 跳过物理状态为"占用"或"维修中"的房间
             if ("维修中".equals(room.getStatus())) continue;
             // 占用：查询日期包含今天则不可用，仅查未来日期可用
             if ("占用".equals(room.getStatus()) && !startDate.isAfter(LocalDate.now())) continue;
@@ -1049,5 +1091,3 @@ public class ReceptionController {
     }
 
 }
-
-
