@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="login-page">
     <!-- ===== 固定顶部栏（宝格丽风格 · 加高加大版） ===== -->
     <header class="header">
@@ -315,10 +315,13 @@ const checkFailCount = async (username) => {
   try {
     const res = await request.get("/login/failCount?username=" + username);
     if (res.code === 200) {
-      requireCaptcha.value = res.data.requireCaptcha;
-      if (requireCaptcha.value && !captchaImage.value) {
-        form.captcha = "";
-        await fetchCaptcha();
+      // 一旦显示验证码，成功登录前不再隐藏
+      if (res.data.requireCaptcha) {
+        requireCaptcha.value = true;
+        if (!captchaImage.value) {
+          form.captcha = '';
+          await fetchCaptcha();
+        }
       }
     }
   } catch (e) {
@@ -359,6 +362,10 @@ const handleLogin = async () => {
     } else {
       ElMessage.error(res.msg || "登录失败");
       await checkFailCount(form.empName);
+      if (requireCaptcha.value) {
+        form.captcha = '';
+        await fetchCaptcha();
+      }
     }
   } catch (err) {
     console.error(err);
@@ -366,6 +373,10 @@ const handleLogin = async () => {
       await fetchCaptcha();
     }
     await checkFailCount(form.empName);
+      if (requireCaptcha.value) {
+        form.captcha = '';
+        await fetchCaptcha();
+      }
   } finally {
     loading.value = false;
   }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,8 +30,10 @@ public class LoginController {
     private static final int MAX_FAILURES = 3;
 
     @GetMapping("/api/login/failCount")
-    public Result<Map<String, Object>> getFailCount(@RequestParam String username) {
-        int count = failureMap.getOrDefault(username, new AtomicInteger(0)).get();
+    public Result<Map<String, Object>> getFailCount(@RequestParam String username, HttpServletRequest request) {
+        String ip = getClientIp(request);
+        String key = username + ":" + ip;
+        int count = failureMap.getOrDefault(key, new AtomicInteger(0)).get();
         Map<String, Object> data = new HashMap<>();
         data.put("failCount", count);
         data.put("requireCaptcha", count >= MAX_FAILURES);
@@ -38,9 +41,11 @@ public class LoginController {
     }
 
     @PostMapping("/api/login")
-    public Result<Map<String, Object>> login(@RequestBody LoginDTO loginDTO, HttpSession session) {
+    public Result<Map<String, Object>> login(@RequestBody LoginDTO loginDTO, HttpSession session, HttpServletRequest request) {
         String username = loginDTO.getEmpName();
-        AtomicInteger counter = failureMap.computeIfAbsent(username, k -> new AtomicInteger(0));
+        String ip = getClientIp(request);
+        String loginKey = username + ":" + ip;
+        AtomicInteger counter = failureMap.computeIfAbsent(loginKey, k -> new AtomicInteger(0));
 
         if (counter.get() >= MAX_FAILURES) {
             String captchaKey = loginDTO.getCaptchaKey();
@@ -50,7 +55,6 @@ public class LoginController {
             }
             String stored = (String) session.getAttribute(captchaKey);
             session.removeAttribute(captchaKey);
-            log.info("验证码校验: key={}, stored={}, input={}", captchaKey, stored, captchaInput);
             if (stored == null || !stored.equalsIgnoreCase(captchaInput)) {
                 return Result.error(401, "验证码错误");
             }
@@ -70,5 +74,26 @@ public class LoginController {
         UserInfoDTO userInfo = new UserInfoDTO(emp.getEmpId(), emp.getEmpName(), emp.getRole());
         data.put("userInfo", userInfo);
         return Result.success(data);
+    }
+
+    /**
+     * 获取客户端真实IP，考虑代理转发
+     */
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // 多级代理取第一个非unknown的IP
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
     }
 }

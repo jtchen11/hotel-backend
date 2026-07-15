@@ -1,6 +1,7 @@
 package com.hotel.config;
 
 import com.hotel.interceptor.LoginInterceptor;
+import com.hotel.interceptor.RateLimitingInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,6 +16,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/login", "/api/login/failCount", "/api/register", "/api/dining/menu", "/api/captcha" );
+
+        registry.addInterceptor(new RateLimitingInterceptor())
+                .addPathPatterns("/api/**");
     }
 
     @Override

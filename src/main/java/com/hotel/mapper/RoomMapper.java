@@ -5,6 +5,7 @@ import com.hotel.dto.RoomStatusDTO;
 import com.hotel.entity.Room;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -13,7 +14,10 @@ public interface RoomMapper extends BaseMapper<Room> {
     @Select("SELECT r.room_id, r.room_number, r.room_type, r.price, r.status, r.description, r.image, " +
             "       g.name as guest_name, g.guest_id as guest_id " +
             "FROM room r " +
-            "LEFT JOIN guest g ON r.room_id = g.room_id AND g.status = '在住' " +
+            "LEFT JOIN guest g ON r.room_id = g.room_id AND g.status = '鍦ㄤ綇' " +
             "ORDER BY r.room_id")
     List<RoomStatusDTO> selectRoomsWithGuest();
+
+    @Select("SELECT * FROM room WHERE room_id = #{roomId} FOR UPDATE")
+    Room selectForUpdate(@Param("roomId") Integer roomId);
 }

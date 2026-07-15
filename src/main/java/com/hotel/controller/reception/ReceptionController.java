@@ -43,6 +43,8 @@ public class ReceptionController {
     private DepositMapper depositMapper;
     @Autowired
     private OrderExtensionLogMapper orderExtensionLogMapper;
+    @Autowired
+    private IdempotentRecordMapper idempotentRecordMapper;
 
     // ========== 散客入住 ==========
     @Operation(summary = "散客入住登记")
@@ -102,6 +104,21 @@ public class ReceptionController {
         BigDecimal depositAmount = depositObj != null ? new BigDecimal(depositObj.toString()) : BigDecimal.ZERO;
         String payMethod = (String) params.get("payMethod");
 
+        // 幂等校验：相同 roomId + idCard + inDate 视为重复请求
+        String idemKey = "checkin:" + roomId + ":" + (idCard != null ? idCard : "") + ":" + inDate;
+        Long idemCount = idempotentRecordMapper.selectCount(
+                new QueryWrapper<IdempotentRecord>().eq("idempotent_key", idemKey));
+        if (idemCount > 0) {
+            return Result.success("该入住请求已处理");
+        }
+        IdempotentRecord idem = new IdempotentRecord();
+        idem.setIdempotentKey(idemKey);
+        idem.setStatus("SUCCESS");
+        idem.setCreatedAt(LocalDateTime.now());
+        idempotentRecordMapper.insert(idem);
+
+        // 行级锁：锁定房间行，防止并发超售
+        roomMapper.selectForUpdate(roomId);
         // 校验房间状态
         Room room = roomMapper.selectById(roomId);
         if (room == null) return Result.error("房间不存在");

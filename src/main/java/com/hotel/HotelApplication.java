@@ -3,9 +3,11 @@ package com.hotel;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
+@ServletComponentScan
 @SpringBootApplication(scanBasePackages = "com.hotel")
 @MapperScan("com.hotel.mapper")
 public class HotelApplication {

@@ -28,10 +28,7 @@ public class CaptchaController {
 
     @GetMapping("/api/captcha")
     public Result<Map<String, String>> getCaptcha(HttpServletRequest request) {
-        String captchaKey = UUID.randomUUID().toString();
         String text = producer.createText();
-        request.getSession().setAttribute(captchaKey, text);
-        log.info("验证码已生成: key={}, text={}", captchaKey, text);
 
         java.awt.image.BufferedImage image = producer.createImage(text);
         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
@@ -43,7 +40,6 @@ public class CaptchaController {
         String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
         Map<String, String> data = new HashMap<>();
         data.put("image", "data:image/jpeg;base64," + base64);
-        data.put("key", captchaKey);
         return Result.success(data);
     }
 }

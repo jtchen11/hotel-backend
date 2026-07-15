@@ -31,10 +31,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Override
     public List<Stock> getStockList(String itemName) {
         if(itemName == null || itemName.trim().isEmpty()){
-            // 不传参数：查全表所有库存
             return list();
         }else{
-            // 关键词模糊查询
             return lambdaQuery()
                     .like(Stock::getItemName,itemName)
                     .list();
@@ -51,22 +49,18 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         for (int i = 0; i < stockIdList.size(); i++) {
             Integer stockId = stockIdList.get(i);
             Integer num = numList.get(i);
-
             if (num <= 0) {
                 throw new RuntimeException("扣减数量必须大于0");
             }
-
             Stock stock = getById(stockId);
             if (stock == null) {
                 throw new RuntimeException("原料不存在，ID：" + stockId);
             }
-            if (stock.getCurrentQuantity() < num) {
-                throw new RuntimeException(stock.getItemName() + " 库存不足，当前库存：" + stock.getCurrentQuantity());
+            // 原子扣减库存，条件更新防止超卖
+            int affected = stockMapper.subStock(stockId, num);
+            if (affected == 0) {
+                throw new RuntimeException(stock.getItemName() + " 库存不足");
             }
-
-            stock.setCurrentQuantity(stock.getCurrentQuantity() - num);
-            stock.setUpdateTime(LocalDateTime.now());
-            updateById(stock);
         }
     }
 
@@ -94,19 +88,15 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (stockId == null || outNum == null || outNum <= 0) {
             throw new RuntimeException("出库参数异常");
         }
-
         Stock stock = getById(stockId);
         if (stock == null) {
             throw new RuntimeException("原料不存在");
         }
-
-        if (stock.getCurrentQuantity() < outNum) {
-            throw new RuntimeException(stock.getItemName() + " 库存不足，当前库存：" + stock.getCurrentQuantity());
+        // 原子扣减库存，条件更新防止超卖
+        int affected = stockMapper.subStock(stockId, outNum);
+        if (affected == 0) {
+            throw new RuntimeException(stock.getItemName() + " 库存不足");
         }
-
-        stock.setCurrentQuantity(stock.getCurrentQuantity() - outNum);
-        stock.setUpdateTime(LocalDateTime.now());
-        updateById(stock);
         return true;
     }
 
@@ -128,7 +118,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
     @Override
     public Map<String, Object> getStockRecords(Integer page, Integer size, Integer stockId, String type) {
-        // 1. 查询入库记录
         QueryWrapper<StockIn> inQw = new QueryWrapper<>();
         inQw.orderByDesc("in_time");
         if (stockId != null) {
@@ -136,7 +125,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         List<StockIn> inList = stockInMapper.selectList(inQw);
 
-        // 2. 查询出库记录
         QueryWrapper<StockOut> outQw = new QueryWrapper<>();
         outQw.orderByDesc("out_time");
         if (stockId != null) {
@@ -144,7 +132,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         List<StockOut> outList = stockOutMapper.selectList(outQw);
 
-        // 3. 分别封装数据
         List<Map<String, Object>> inRecords = new ArrayList<>();
         for (StockIn in : inList) {
             Map<String, Object> item = new LinkedHashMap<>();
@@ -176,8 +163,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             outRecords.add(item);
         }
 
-        // 4. 分页（这里先简单返回全部，分页由前端控制，或者您可以根据需要修改）
-        // 由于数据量可能较大，建议后端分页，但为了简化，这里返回全部
         Map<String, Object> result = new HashMap<>();
         result.put("inRecords", inRecords);
         result.put("outRecords", outRecords);

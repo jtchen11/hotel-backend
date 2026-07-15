@@ -12,6 +12,7 @@ import com.hotel.entity.OrderMain;
 import com.hotel.mapper.OrderMainMapper;
 import com.hotel.service.GuestService;
 import com.hotel.service.MenuService;
+import com.hotel.mapper.MenuMapper;
 import com.hotel.service.OrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,8 @@ public class DiningController {
 
     @Autowired
     private MenuService menuService;
+    @Autowired
+    private MenuMapper menuMapper;
     @Autowired
     private OrderMainMapper orderMainMapper;
     @Autowired
@@ -77,18 +80,11 @@ public class DiningController {
             if (menu == null) {
                 return Result.error("菜品 " + item.getItemName() + " 不存在");
             }
-            // 检查库存
-            if (menu.getStockQuantity() < item.getQuantity()) {
-                return Result.error("菜品 " + item.getItemName() + " 库存不足，当前仅剩 " + menu.getStockQuantity());
+            // 原子扣减库存，条件更新防止超卖
+            int affected = menuMapper.deductStock(item.getItemName(), item.getQuantity());
+            if (affected == 0) {
+                return Result.error("菜品 " + item.getItemName() + " 库存不足");
             }
-            // 扣减库存
-            menu.setStockQuantity(menu.getStockQuantity() - item.getQuantity());
-            if (menu.getStockQuantity() <= 0) {
-                menu.setStatus("售罄");
-            } else {
-                menu.setStatus("在售");
-            }
-            menuService.updateById(menu);
 
             BigDecimal amount = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             OrderDetail detail = new OrderDetail();
@@ -148,3 +144,4 @@ public class DiningController {
         return Result.success(list);
     }
 }
+
