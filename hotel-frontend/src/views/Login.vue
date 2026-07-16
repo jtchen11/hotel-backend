@@ -142,7 +142,7 @@
               <el-carousel
                 class="facility-carousel"
                 height="300px"
-                indicator-position="inside"
+                indicator-position="outside"
                 arrow="always"
                 :interval="4000"
               >
