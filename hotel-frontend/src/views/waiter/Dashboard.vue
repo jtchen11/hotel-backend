@@ -1,5 +1,6 @@
 <template>
   <div class="waiter-dashboard">
+    <!-- 顶部标题区域 -->
     <div class="dashboard-header">
       <div>
         <h2>营业服务员工作台</h2>
@@ -11,6 +12,7 @@
       </div>
     </div>
 
+    <!-- 四项统计卡片 -->
     <div class="data-grid">
       <div class="data-card">
         <div class="card-left">
@@ -42,24 +44,17 @@
       </div>
     </div>
 
+    <!-- 快捷操作区：只剩2个按钮 -->
     <div class="quick-section">
       <h3>⚡ 工作台快捷操作</h3>
       <div class="quick-grid">
-        <div class="quick-item" @click="router.push('/waiter/menu')">
-          <div class="q-icon">🍽️</div>
-          <span>菜单点菜</span>
+        <div class="quick-item" @click="getDashboardData">
+          <div class="q-icon">🔄</div>
+          <span>刷新数据</span>
         </div>
-        <div class="quick-item" @click="router.push('/waiter/ktv')">
-          <div class="q-icon">🎤</div>
-          <span>KTV管理</span>
-        </div>
-        <div class="quick-item" @click="router.push('/waiter/stock')">
+        <div class="quick-item" @click="handleCheckStock">
           <div class="q-icon">📦</div>
-          <span>库房管理</span>
-        </div>
-        <div class="quick-item" @click="router.push('/waiter/unsettled')">
-          <div class="q-icon">💳</div>
-          <span>历史账单</span>
+          <span>库存提醒</span>
         </div>
       </div>
     </div>
@@ -68,11 +63,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/utils/request";
-
-const router = useRouter();
 
 const currentDate = ref("");
 const todayOrderCount = ref(0);
@@ -105,6 +97,40 @@ const getDashboardData = async () => {
   }
 };
 
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const handleCheckStock = async () => {
+  try {
+    const res = await request.get("/warehouse/warning");
+    const warningList = res.data || [];
+    if (warningList.length === 0) {
+      ElMessage.success("所有库存正常，没有低于预警线的物品");
+    } else {
+      // 取前3个物品名称作为摘要
+      const names = warningList
+        .slice(0, 3)
+        .map(
+          (item) =>
+            `${item.itemName}（${item.currentQuantity}${item.unit || "件"}）`,
+        )
+        .join("、");
+      const more = warningList.length > 3 ? `等${warningList.length}项` : "";
+      ElMessage({
+        message: `⚠️ ${names}${more} 库存低于预警线，点击查看详情`,
+        type: "warning",
+        duration: 5000,
+        onClick: () => {
+          router.push("/warehouse/stock"); // 跳转到库存管理页面
+        },
+      });
+    }
+  } catch (err) {
+    console.error("获取库存预警数据失败:", err);
+    ElMessage.error("获取库存预警数据失败，请稍后重试");
+  }
+};
 onMounted(() => {
   getDashboardData();
 });
@@ -186,18 +212,27 @@ onMounted(() => {
   justify-content: center;
   font-size: 26px;
 }
-.card-icon.green { background: #e6f7ef; }
-.card-icon.orange { background: #fff7e6; }
-.card-icon.blue { background: #e6f7ff; }
-.card-icon.red { background: #fff1f0; }
+.card-icon.green {
+  background: #e6f7ef;
+}
+.card-icon.orange {
+  background: #fff7e6;
+}
+.card-icon.blue {
+  background: #e6f7ff;
+}
+.card-icon.red {
+  background: #fff1f0;
+}
 .quick-section h3 {
   font-size: 16px;
   color: #333;
   margin-bottom: 16px;
 }
+/* 改成两列布局 */
 .quick-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 .quick-item {
@@ -207,7 +242,6 @@ onMounted(() => {
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 .quick-item:hover {
   transform: translateY(-2px);

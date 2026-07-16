@@ -31,6 +31,6 @@ export const changeKtvRoomStatus = (ktvId, status) => {
 // ========== 库房模块【修改入库、出库url】 ==========
 export const listStock = (params) =>
   request.get("/warehouse/stock", { params });
-export const stockIn = (data) => request.post("/warehouse/stockIn", data);
-export const stockOut = (data) => request.post("/warehouse/stockOut", data);
+export const stockIn = (data) => request.post("/warehouse/in", data);
+export const stockOut = (data) => request.post("/warehouse/out", data);
 export const getWarningList = () => request.get("/warehouse/warning");
