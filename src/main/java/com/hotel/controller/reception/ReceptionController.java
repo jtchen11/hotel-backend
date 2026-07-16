@@ -111,12 +111,6 @@ public class ReceptionController {
         if (idemCount > 0) {
             return Result.success("该入住请求已处理");
         }
-        IdempotentRecord idem = new IdempotentRecord();
-        idem.setIdempotentKey(idemKey);
-        idem.setStatus("SUCCESS");
-        idem.setCreatedAt(LocalDateTime.now());
-        idempotentRecordMapper.insert(idem);
-
         // 行级锁：锁定房间行，防止并发超售
         roomMapper.selectForUpdate(roomId);
         // 校验房间状态
@@ -126,12 +120,18 @@ public class ReceptionController {
             return Result.error("房间当前状态为【" + room.getStatus() + "】，无法办理入住");
         }
 
-        // 检查日期范围内是否有冲突
-        List<Room> availableRooms = findAvailableRooms(inDate, outDate, null, guestId);
-        boolean isAvailable = availableRooms.stream().anyMatch(r -> r.getRoomId().equals(roomId));
-        if (!isAvailable) {
+        // 检查日期范围内是否有冲突（行锁 guest 表冲突记录，防并发超售）
+        int conflictCount = guestMapper.countConflictingForUpdate(roomId, outDate.atStartOfDay(), inDate, guestId);
+        if (conflictCount > 0) {
             return Result.error("该房间在" + inDate + "至" + outDate + "期间已被其他预订占用，请选择其他房间");
         }
+
+        // 幂等记录：通过所有校验后插入
+        IdempotentRecord idem = new IdempotentRecord();
+        idem.setIdempotentKey(idemKey);
+        idem.setStatus("SUCCESS");
+        idem.setCreatedAt(LocalDateTime.now());
+        idempotentRecordMapper.insert(idem);
 
         Guest guest;
         if (guestId != null) {
@@ -579,10 +579,23 @@ public class ReceptionController {
         LocalDate inDate = LocalDate.parse(inDateStr);
         LocalDate outDate = LocalDate.parse(outDateStr);
 
+        // 在事务内逐一锁定候选房间并检测冲突
         List<Room> candidates = findAvailableRooms(inDate, outDate, roomType, null);
         candidates.removeIf(r -> "维修中".equals(r.getStatus()));
-        if (candidates.isEmpty()) return Result.error("该房型在所选日期范围内已满，请选择其他房型或调整日期");
-        Room assigned = candidates.get(0);
+        Room assigned = null;
+        for (Room candidate : candidates) {
+            roomMapper.selectForUpdate(candidate.getRoomId());
+            Room locked = roomMapper.selectById(candidate.getRoomId());
+            if ("维修中".equals(locked.getStatus())) continue;
+            int conflict = guestMapper.countConflictingForUpdate(candidate.getRoomId(), outDate.atStartOfDay(), inDate, null);
+            if (conflict == 0) {
+                assigned = locked;
+                break;
+            }
+        }
+        if (assigned == null) {
+            return Result.error("该房型在所选日期范围内已满，请选择其他房型或调整日期");
+        }
 
         Guest guest = new Guest();
         guest.setName(guestName);
