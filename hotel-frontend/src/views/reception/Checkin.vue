@@ -349,6 +349,10 @@ const selectTeamBooking = (b) => {
 }
 
 const clickTeamRoom = (r) => {
+  // 如果是预订时锁定的房间，允许选中
+  if (teamSelectedGuest.value && r.roomId === teamSelectedGuest.value.roomId) {
+    teamSelectedRoom.value = r; return
+  }
   if (r.isBusy || r.status == "维修中" || r.status == "打扫中") { ElMessage.warning("该房间不可用"); return }
   teamSelectedRoom.value = r
 }
@@ -368,7 +372,7 @@ const teamRoomClass = (r) => {
   const cls = []
   if (r.status == '维修中') cls.push('room-maintenance')
   else if (r.status == '打扫中') cls.push('room-cleaning')
-  else if (r.isBusy) cls.push('room-locked')
+  else if (r.isBusy && !(teamSelectedGuest.value && r.roomId === teamSelectedGuest.value.roomId)) cls.push('room-locked')
   else cls.push('room-free')
   return cls
 }

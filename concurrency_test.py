@@ -15,7 +15,7 @@ booked_guest_ids = []  # 记录成功预订的 guestId，用于清理
 
 def get_token():
     r = requests.post(f"{BASE}/login", json={
-        "empName": "张丽华", "password": "123456"
+        "empName": "王敏", "password": "123456"
     }, timeout=5)
     data = r.json()
     if data.get("code") == 200:
