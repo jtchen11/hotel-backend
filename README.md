@@ -126,7 +126,7 @@ hotel-backend/
 ├── src/                     # Java 源代码
 ├── sql/                     # 数据库初始化脚本
 ├── hotel-frontend/          # Vue 3 前端
-├── concurrency_test.py      # 并发压测脚本
+├── test/performance         # .py脚本(含压测)
 ├── run-tests.bat            # 测试启动脚本
 ├── docker-compose.yml       # Docker 编排
 ├── Dockerfile               # Docker 镜像构建
