@@ -1,17 +1,16 @@
 package com.hotel.filter;
 
-import com.hotel.common.UserContext;
 import com.hotel.entity.AuditLog;
 import com.hotel.mapper.AuditLogMapper;
+import com.hotel.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,35 +38,33 @@ public class AuditFilter implements Filter {
         }
 
         long start = System.currentTimeMillis();
-        ContentCachingResponseWrapper wrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
 
         try {
-            chain.doFilter(request, wrapper);
+            chain.doFilter(request, response);
         } finally {
             long cost = System.currentTimeMillis() - start;
-
-            String resultStatus = "SUCCESS";
-            try {
-                byte[] buf = wrapper.getContentAsByteArray();
-                if (buf.length > 0) {
-                    String body = new String(buf, StandardCharsets.UTF_8);
-                    if (body.contains("\"code\":500") || body.contains("\"code\":400")) {
-                        resultStatus = "FAILED";
-                    }
-                }
-            } catch (Exception ignored) {}
+            int httpStatus = 200;
+            if (response instanceof HttpServletResponse) {
+                httpStatus = ((HttpServletResponse) response).getStatus();
+            }
 
             AuditLog log = new AuditLog();
-            log.setOperator(UserContext.getEmpName() != null ? UserContext.getEmpName() : "");
-            log.setOperation("[" + cost + "ms] " + method + " " + uri);
-            log.setResult(resultStatus);
+            String operator = "";
+            String auth = req.getHeader("Authorization");
+            if (auth != null && auth.startsWith("Bearer ")) {
+                Claims claims = JwtUtils.parseToken(auth.substring(7));
+                if (claims != null) {
+                    operator = claims.get("empName", String.class);
+                }
+            }
+            log.setOperator(operator != null ? operator : "");
+            log.setOperation("[" + cost + "ms][" + httpStatus + "] " + method + " " + uri);
+            log.setResult(httpStatus < 400 ? "SUCCESS" : "HTTP_" + httpStatus);
             log.setIp(getClientIp(req));
             log.setCreatedAt(LocalDateTime.now());
             try {
                 auditLogMapper.insert(log);
             } catch (Exception ignored) {}
-
-            wrapper.copyBodyToResponse();
         }
     }
 
