@@ -46,3 +46,45 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# ============================================
+# 以下是新增的优化建议
+# ============================================
+
+### Maven Wrapper (可选)
+.mvn/
+
+### Docker
+.dockerignore
+docker-compose.override.yml
+*.pid
+
+### 环境变量文件（敏感信息）
+.env.local
+.env.*.local
+.env.production
+.env.development
+secrets/
+
+### Python 测试脚本（压测生成的临时文件）
+*.pyc
+__pycache__/
+*.py[co]
+*.report
+*.html
+test-output/
+
+### 临时文件和备份文件
+*.tmp
+*.bak
+*.orig
+*.old
+*~
+
+### 压缩包和二进制文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.exe
+*.dmg
+*.pkg
