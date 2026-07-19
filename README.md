@@ -1,39 +1,19 @@
-# Hotel PMS 管理系统
+# 🏨 酒店后台管理系统
 
-饭店管理信息系统（Hotel Management Information System），基于 **Spring Boot + Vue 3** 的全栈 Web 应用，覆盖预订入住、餐饮、KTV、库存、员工考勤工资、总经理数据看板六大业务域，4 种角色权限隔离，Docker Compose 三容器编排部署。
+> 基于 Spring Boot + Vue 3 + MySQL 的全栈酒店 PMS 管理系统，覆盖预订入住、餐饮、KTV、库存、员工考勤工资、总经理数据看板六大业务域，4 种角色权限隔离，Docker Compose 三容器编排部署。
 
-## 技术栈
+[![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.18-green.svg)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-| 层级 | 技术 | 版本 |
-|------|------|------|
-| 后端框架 | Spring Boot | 2.7.18 |
-| ORM | MyBatis-Plus | 3.5.3 |
-| 数据库 | MySQL | 8.0 |
-| 认证 | JWT (jjwt 0.12.x) + BCrypt | - |
-| 前端框架 | Vue 3 (Composition API) | 3.5 |
-| UI 组件 | Element Plus | 2.14 |
-| 状态管理 | Pinia | 3.0 |
-| 构建工具 | Vite | - |
-| 工具库 | Hutool, Lombok, Apache POI | - |
-| 测试 | JUnit 5 + H2 | - |
+---
 
-## 企业级特性
+## 系统截图
 
-### 并发安全
-- 数据库行级锁（SELECT...FOR UPDATE）防房间超售，并发压测 10 请求同房间入住零超售
-- 原子条件更新（UPDATE...WHERE quantity>=#num）防库存超卖
-- 接口幂等方案（唯一键去重），网络重试场景下入住/下单零重复处理
+![Login](docs/images/login.png)
 
-### 安全防御
-- JWT 无状态认证，支持水平扩展
-- 用户名 + IP 双维度失败计数，3 次错误触发验证码
-- IP 60 次/分钟接口限流
-- XSS 参数过滤
-- 全局异常脱敏，不泄露内部信息
-
-### 可观测性
-- 审计日志模块：自动记录所有写操作的操作人、耗时、客户端 IP、业务结果
-- 7 个 JUnit 单元测试（H2 内存库），覆盖可用房间、库存扣减、幂等去重、结账计算等核心逻辑
+---
 
 ## 系统角色
 
@@ -52,8 +32,7 @@
 - 在住客人账单查询（房费、餐饮、KTV、杂费）
 - 结账预览与结算、押金管理
 - 员工管理（入职/离职/信息维护）
-- 考勤打卡与月工资核算
-- 工资表 Excel 导出
+- 考勤打卡与月工资核算、工资表 Excel 导出
 
 ### 4. 总经理
 - KPI 驾驶舱（今日营收、入住率等）
@@ -61,76 +40,124 @@
 - 入住率趋势（日/月粒度）
 - 员工房间配比
 
-## 快速启动
+---
 
-### 前置要求
-- JDK 11+
-- Maven 3.6+
-- MySQL 8.0+
-- Node.js 18+
+## 特殊特性
 
-### 1. 数据库初始化
+### 并发安全
+- 数据库行级锁（SELECT...FOR UPDATE）防房间超售，并发压测验证零超售
+- 原子条件更新（UPDATE...WHERE quantity>=#num）防库存超卖
+- 接口幂等方案（唯一键去重），网络重试场景下入住/下单零重复处理
 
-\\sql
-CREATE DATABASE IF NOT EXISTS resturant_system DEFAULT CHARACTER SET utf8mb4;
-\
-执行 sql/ 目录下的建表脚本。
+### 安全防御
+- JWT 无状态认证，支持水平扩展
+- 用户名 + IP 双维度失败计数，3 次错误触发验证码
+- IP 60 次/分钟接口限流
+- XSS 参数过滤
+- 全局异常脱敏，不泄露内部信息
 
-### 2. 启动后端
+### 可观测性
+- 审计日志模块：自动记录所有写操作的操作人、耗时、客户端 IP、业务结果
+- 7 个 JUnit 单元测试（H2 内存库），覆盖可用房间、库存扣减、幂等去重、结账计算等核心逻辑
 
-\\ash
-# 配置 application.yml 中的数据库用户名密码
+---
+
+## 技术栈
+
+| 技术 | 说明 |
+| :--- | :--- |
+| **Java 17** | 后端开发语言 |
+| **Spring Boot 2.7** | 核心框架 |
+| **MyBatis-Plus** | ORM 持久层框架 |
+| **MySQL 8.0** | 关系型数据库 |
+| **H2** | 单元测试内存数据库 |
+| **Vue 3 + Element Plus** | 前端框架与 UI 组件库 |
+| **Docker** | 容器化部署 |
+| **JUnit 5** | 单元测试 |
+
+---
+
+## 快速开始
+
+### 1. 克隆项目
+```bash
+git clone git@github.com:jtchen11/hotel-backend.git
+cd hotel-backend
+```
+
+### 2. 初始化数据库
+```sql
+CREATE DATABASE resturant_system DEFAULT CHARACTER SET utf8mb4;
+```
+
+执行 sql/ 目录下的初始化脚本。
+
+### 3. 配置文件
+```bash
+cp .env.example .env
+```
+
+修改 `.env` 中的数据库密码和 JWT 密钥。
+
+### 4. 启动后端
+```bash
 mvn spring-boot:run
-\
-### 3. 启动前端
+```
 
-\\ash
+### 5. 启动前端
+```bash
 cd hotel-frontend
 npm install
 npm run dev
-\
-访问 http://localhost:5173，默认员工密码 123456。
+```
 
-## API 文档
+访问 `http://localhost:5173`，默认员工密码 `123456`。
 
-启动后端后访问：
-\'
-http://localhost:8080/swagger-ui.html
-\'
+## Docker 部署
 
-## 测试
+```bash
+docker-compose up -d
+```
 
-\\ash
+## 项目结构
+
+```
+hotel-backend/
+├── src/                     # Java 源代码
+├── sql/                     # 数据库初始化脚本
+├── hotel-frontend/          # Vue 3 前端
+├── concurrency_test.py      # 并发压测脚本
+├── run-tests.bat            # 测试启动脚本
+├── docker-compose.yml       # Docker 编排
+├── Dockerfile               # Docker 镜像构建
+├── nginx.conf               # Nginx 配置
+├── pom.xml                  # Maven 依赖管理
+└── README.md                # 项目说明
+```
+
+## 运行测试
+
+```bash
 # 单元测试（H2 内存库）
 mvn test
 
 # 并发压测（需先启动后端）
 python concurrency_test.py
-\
-## Docker 部署
+```
 
-\\ash
-docker-compose up -d
-\
-## 项目结构
+## 贡献指南
 
-\'
-hotel-backend/
-├── src/main/java/com/hotel/
-│   ├── config/          # 配置类（CORS、MyBatis-Plus）
-│   ├── controller/      # 控制器层
-│   ├── service/         # 服务接口 + 实现
-│   ├── mapper/          # MyBatis-Plus Mapper
-│   ├── entity/          # 数据库实体
-│   ├── dto/             # 数据传输对象
-│   ├── filter/          # XSS 过滤、审计日志
-│   ├── interceptor/     # JWT 登录拦截、IP 限流
-│   ├── common/          # 通用类（Result、UserContext）
-│   ├── utils/           # 工具类（JWT、日期、金额）
-│   ├── task/            # 定时任务
-│   └── exception/       # 全局异常处理
-├── hotel-frontend/      # Vue 3 前端项目
-├── sql/                 # 数据库 DDL
-├── docker-compose.yml   # Docker 编排
-└── README.md
-\'
+1. Fork 本仓库
+2. 创建功能分支：`git checkout -b feature/your-feature`
+3. 提交改动：`git commit -m 'your message'`
+4. 推送分支：`git push origin feature/your-feature`
+5. 提交 Pull Request
+
+## 开源协议
+
+MIT License
+
+## 联系作者
+
+- GitHub: [@jtchen11](https://github.com/jtchen11)
+- 项目地址: [https://github.com/jtchen11/hotel-backend](https://github.com/jtchen11/hotel-backend)
